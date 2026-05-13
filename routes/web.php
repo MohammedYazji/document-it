@@ -9,4 +9,3 @@ Route::get("/", HomeController::class)->name("home");
 Route::get("/article/{id}/{slug?}", [PostController::class, "show"])->where([
     'slug' => '[a-z0-9\-]+'
 ]);
-
