@@ -141,10 +141,10 @@
                                                 <span class="material-symbols-outlined"
                                                         data-icon="bookmark">bookmark</span>
                                         </button>
-                                        <button
+                                        <a href="{{ route('posts.create') }}"
                                                 class="ml-2 bg-primary-container text-on-primary px-6 py-2 rounded-lg font-ui-button text-ui-button hover:opacity-90 active:scale-95 transition-all">
                                                 Create Post
-                                        </button>
+                                        </a>
                                         <div
                                                 class="ml-2 w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
                                                 <img alt="User Avatar" class="w-full h-full object-cover"
@@ -155,9 +155,7 @@
                 </div>
         </header>
         <!-- Main Content Layout -->
-        <main class="{{ $mainClass ?? '' }}">
-                {{ $slot }}
-        </main>
+        {{ $slot }}
         <!-- Footer -->
         <footer class="bg-surface border-t border-outline-variant">
                 <div

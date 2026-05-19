@@ -28,6 +28,6 @@ class RecommendedAuthors extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.recommended-authors', ['title' => $this->title]);
+        return view('components.widgets.recommended-authors', ['title' => $this->title]);
     }
 }

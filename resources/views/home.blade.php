@@ -1,5 +1,4 @@
-<x-layouts.main-layout title="Document It"
-  main-class="pt-24 pb-section-gap max-w-container-max mx-auto px-gutter grid grid-cols-1 md:grid-cols-12 gap-8">
+<x-layout title="Document It">
 
   <x-slot:style>
     <style>
@@ -14,6 +13,8 @@
       }
     </style>
   </x-slot:style>
+
+  <main class="pt-24 pb-section-gap max-w-container-max mx-auto px-gutter grid grid-cols-1 md:grid-cols-12 gap-8">
   <!-- Left Sidebar: Navigation & Tags -->
   <aside class="hidden md:block md:col-span-2 space-y-8">
     <div class="space-y-4">
@@ -164,4 +165,5 @@
       </x-slot:helper>
     </x-widgets.newsletter>
   </aside>
-</x-layouts.main-layout>
+  </main>
+</x-layout>
