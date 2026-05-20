@@ -115,11 +115,13 @@
                                         href="{{route('home')}}">{{config('app.name')}}</a>
                                 <nav class="hidden md:flex items-center gap-6">
                                         <a class="text-primary font-bold border-b-2 border-primary pb-1 font-ui-label text-ui-label hover:text-primary transition-colors duration-200"
-                                                href="#">Feed</a>
+                                                href="{{ route('posts.index') }}">Feed</a>
                                         <a class="text-on-surface-variant font-medium font-ui-label text-ui-label hover:text-primary transition-colors duration-200"
                                                 href="#">Authors</a>
                                         <a class="text-on-surface-variant font-medium font-ui-label text-ui-label hover:text-primary transition-colors duration-200"
-                                                href="#">Dashboard</a>
+                                                href="{{ route('posts.index') }}">Dashboard</a>
+                                        <a class="text-on-surface-variant font-medium font-ui-label text-ui-label hover:text-primary transition-colors duration-200"
+                                                href="{{ route('categories.index') }}">Categories</a>
                                 </nav>
                         </div>
                         <div class="flex items-center gap-4">

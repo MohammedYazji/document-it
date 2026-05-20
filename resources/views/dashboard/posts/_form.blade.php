@@ -28,12 +28,84 @@
                 <!-- Cover Image -->
                 <section>
                     <h3 class="font-ui-label text-ui-label text-on-surface mb-4 uppercase tracking-wider">Cover Image</h3>
-                    <div
-                        class="aspect-video w-full rounded-lg bg-surface-container border-2 border-dashed border-outline-variant flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-surface-container-high transition-colors group">
-                        <span
-                            class="material-symbols-outlined text-secondary group-hover:text-primary transition-colors">add_a_photo</span>
-                        <span class="font-metadata text-metadata text-secondary">Upload high-res photo</span>
+
+                    {{-- Clickable drop zone --}}
+                    <label for="cover_image_input"
+                        class="relative aspect-video w-full rounded-lg bg-surface-container border-2 border-dashed border-outline-variant flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-surface-container-high transition-colors group overflow-hidden block">
+
+                        {{-- Preview image (hidden until a file is chosen or post has one) --}}
+                        @if(isset($post) && $post->cover_image)
+                            <img id="cover-preview"
+                                src="{{ asset('storage/' . $post->cover_image) }}"
+                                alt="Cover preview"
+                                class="absolute inset-0 w-full h-full object-cover" />
+                        @else
+                            <img id="cover-preview"
+                                src=""
+                                alt="Cover preview"
+                                class="absolute inset-0 w-full h-full object-cover hidden" />
+                        @endif
+
+                        {{-- Overlay icon --}}
+                        <div id="cover-placeholder" class="flex flex-col items-center gap-2 {{ isset($post) && $post->cover_image ? 'opacity-0 group-hover:opacity-100 absolute inset-0 flex items-center justify-center bg-black/30 rounded-lg transition-opacity' : '' }}">
+                            <span class="material-symbols-outlined text-secondary group-hover:text-primary transition-colors">add_a_photo</span>
+                            <span class="font-metadata text-metadata text-secondary">Upload high-res photo</span>
+                        </div>
+                    </label>
+
+                    {{-- Hidden real file input --}}
+                    <input
+                        id="cover_image_input"
+                        type="file"
+                        name="cover_image"
+                        accept="image/*"
+                        class="sr-only"
+                        onchange="
+                            const file = this.files[0];
+                            if (!file) return;
+                            const preview = document.getElementById('cover-preview');
+                            const placeholder = document.getElementById('cover-placeholder');
+                            preview.src = URL.createObjectURL(file);
+                            preview.classList.remove('hidden');
+                            placeholder.classList.add('opacity-0');
+                        "
+                    />
+
+                    {{-- Remove button (only if post already has a cover) --}}
+                    @if(isset($post) && $post->cover_image)
+                        <p class="mt-2 text-metadata font-metadata text-secondary text-center">
+                            Choose a new image to replace the current cover.
+                        </p>
+                    @endif
+                </section>
+
+                <!-- Category -->
+                <section>
+                    <h3 class="font-ui-label text-ui-label text-on-surface mb-4 uppercase tracking-wider">Category</h3>
+                    <div class="relative">
+                        <select
+                            name="category_id"
+                            id="post-category"
+                            class="w-full bg-white border border-outline-variant rounded-lg px-4 py-2 font-metadata text-metadata text-on-surface focus:ring-2 focus:ring-primary focus:border-primary transition-all appearance-none pr-8"
+                        >
+                            <option value="">— No category —</option>
+                            @foreach ($categories ?? [] as $cat)
+                                <option
+                                    value="{{ $cat->id }}"
+                                    {{ old('category_id', $post->category_id ?? '') == $cat->id ? 'selected' : '' }}
+                                >
+                                    {{ $cat->parent ? $cat->parent->name . ' › ' : '' }}{{ $cat->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-secondary pointer-events-none text-[18px]">expand_more</span>
                     </div>
+                    @if(isset($categories) && $categories->isEmpty())
+                        <p class="mt-2 text-metadata font-metadata text-secondary">
+                            No categories yet —
+                            <a href="{{ route('categories.create') }}" class="text-primary underline" target="_blank">create one</a>
+                        </p>
+                    @endif
                 </section>
 
                 <!-- Tags -->
