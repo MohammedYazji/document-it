@@ -19,10 +19,14 @@
 
             {{-- Validation Errors --}}
             @if ($errors->any())
-                <div class="mb-6 p-4 bg-error-container border border-error rounded-xl">
-                    <ul class="list-disc list-inside space-y-1">
+                <div class="mb-6 p-4 bg-error-container border border-error rounded-xl shadow-sm">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="material-symbols-outlined text-error">error</span>
+                        <h3 class="text-on-error-container font-ui-label text-ui-label tracking-wider uppercase">Please fix the following errors:</h3>
+                    </div>
+                    <ul class="list-disc list-inside space-y-1 ml-1 text-on-error-container font-metadata text-metadata">
                         @foreach ($errors->all() as $error)
-                            <li class="text-ui-label font-ui-label text-on-error-container">{{ $error }}</li>
+                            <li>{{ $error }}</li>
                         @endforeach
                     </ul>
                 </div>
@@ -51,6 +55,9 @@
                         class="w-full bg-white border border-outline-variant rounded-xl px-4 py-3 font-ui-label text-ui-label text-on-surface focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-secondary"
                         required
                     />
+                    @error('name')
+                        <p class="mt-1 text-sm text-error font-metadata">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 {{-- Slug (read-only, auto-generated preview) --}}
@@ -78,6 +85,9 @@
                         placeholder="Optional description for this category..."
                         class="w-full bg-white border border-outline-variant rounded-xl px-4 py-3 font-ui-label text-ui-label text-on-surface focus:ring-2 focus:ring-primary focus:border-primary transition-all resize-none placeholder:text-secondary"
                     >{{ old('description', $category->description ?? '') }}</textarea>
+                    @error('description')
+                        <p class="mt-1 text-sm text-error font-metadata">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 {{-- Parent Category --}}
@@ -100,6 +110,9 @@
                             </option>
                         @endforeach
                     </select>
+                    @error('parent_id')
+                        <p class="mt-1 text-sm text-error font-metadata">{{ $message }}</p>
+                    @enderror
                 </div>
 
             </div>

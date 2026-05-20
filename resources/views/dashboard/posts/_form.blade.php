@@ -4,20 +4,40 @@
         @method($method)
     @endif
 
+
     <main class="pt-24 pb-32 flex flex-col lg:flex-row max-w-container-max mx-auto px-gutter gap-12">
         <!-- Editor Canvas -->
         <div class="flex-1 max-w-article-max mx-auto w-full distraction-free-focus">
             <div class="editor-container">
+                @if ($errors->any())
+                    <div class="mb-8 p-4 bg-error-container border border-error rounded-xl shadow-sm">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="material-symbols-outlined text-error">error</span>
+                            <h3 class="text-on-error-container font-ui-label text-ui-label tracking-wider uppercase">Please fix the following errors:</h3>
+                        </div>
+                        <ul class="list-disc list-inside space-y-1 ml-1 text-on-error-container font-metadata text-metadata">
+                            @foreach ($errors->all() as $message)
+                                <li>{{ $message }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <!-- Title Field -->
                 <textarea name="title"
-                    class="w-full bg-transparent border-none focus:ring-0 font-display-lg text-display-lg resize-none placeholder:text-surface-variant text-on-surface mb-8 overflow-hidden"
+                    class="w-full bg-transparent border-none focus:ring-0 font-display-lg text-display-lg resize-none placeholder:text-surface-variant text-on-surface mb-2 overflow-hidden"
                     oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
                     placeholder="Enter your title..." rows="1">{{ old('title', $post->title ?? '') }}</textarea>
+                @error('title')
+                    <p class="mb-6 text-sm text-error font-metadata pl-2">{{ $message }}</p>
+                @enderror
 
                 <!-- Main Content Editor -->
                 <textarea name="content"
                     class="w-full min-h-[400px] bg-transparent resize-none border-none focus:ring-0 focus:outline-none font-body-lg text-body-lg text-on-surface leading-relaxed placeholder:text-surface-variant p-2"
                     placeholder="Type your story...">{{ old('content', $post->content ?? '') }}</textarea>
+                @error('content')
+                    <p class="mt-2 text-sm text-error font-metadata pl-2">{{ $message }}</p>
+                @enderror
             </div>
         </div>
 
@@ -70,6 +90,9 @@
                             placeholder.classList.add('opacity-0');
                         "
                     />
+                    @error('cover_image')
+                        <p class="mt-2 text-sm text-error font-metadata text-center">{{ $message }}</p>
+                    @enderror
 
                     {{-- Remove button (only if post already has a cover) --}}
                     @if(isset($post) && $post->cover_image)
@@ -100,6 +123,9 @@
                         </select>
                         <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-secondary pointer-events-none text-[18px]">expand_more</span>
                     </div>
+                    @error('category_id')
+                        <p class="mt-2 text-sm text-error font-metadata">{{ $message }}</p>
+                    @enderror
                     @if(isset($categories) && $categories->isEmpty())
                         <p class="mt-2 text-metadata font-metadata text-secondary">
                             No categories yet —

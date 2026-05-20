@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
-use Illuminate\Http\Request;
+use App\Http\Requests\CategoryRequest;
 use Illuminate\Support\Str;
 
 class CategoryController extends Controller
@@ -39,13 +39,8 @@ class CategoryController extends Controller
     /**
      * Store a newly created category.
      */
-    public function store(Request $request)
+    public function store(CategoryRequest $request)
     {
-        $request->validate([
-            'name'        => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'parent_id'   => 'nullable|exists:categories,id',
-        ]);
 
         $request->merge([
             'slug' => Str::slug($request->input('name')),
@@ -79,15 +74,9 @@ class CategoryController extends Controller
     /**
      * Update the specified category.
      */
-    public function update(Request $request, int $id)
+    public function update(CategoryRequest $request, int $id)
     {
         $category = Category::findOrFail($id);
-
-        $request->validate([
-            'name'        => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'parent_id'   => 'nullable|exists:categories,id',
-        ]);
 
         $request->merge([
             'slug' => Str::slug($request->input('name')),
