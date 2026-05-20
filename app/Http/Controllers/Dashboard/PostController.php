@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Dashboard;
 
+use App\Actions\FileUpload;
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Number;
 use Illuminate\Support\Str;
 
@@ -43,23 +46,27 @@ class PostController extends Controller
     public function create()
     {
         return view('dashboard.posts.create', [
-            'post' => new Post(),
+            'post'       => new Post(),
+            'categories' => Category::orderBy('name')->get(),
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, FileUpload $fileUpload)
     {
+        $cover_image_path = $fileUpload->handle('cover_image', 'covers');
+
         // cause we still not have auth user so merge fake id with the request
         $request->merge([
-            'user_id' => 1, // TODO: get from auth()->id()
-            'slug' => Str::slug($request->post('title')),
-            'status' => $request->has('status') ? 'published' : 'draft',
+            'user_id'     => 1, // TODO: get from auth()->id()
+            'slug'        => Str::slug($request->post('title')),
+            'status'      => $request->has('status') ? 'published' : 'draft',
+            'cover_image' => $cover_image_path,
         ]);
 
-        $post = Post::create($request->all());
+        $post = Post::create($request->except(['_token', 'cover_image']) + ['cover_image' => $cover_image_path]);
 
         // PRG: POST Redirect GET
         return redirect()->route('posts.index');
@@ -85,26 +92,36 @@ class PostController extends Controller
         $post = Post::findOrFail($id);
 
         return view('dashboard.posts.edit', [
-            'post' => $post,
+            'post'       => $post,
+            'categories' => Category::orderBy('name')->get(),
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $id, FileUpload $fileUpload)
     {
         $post = Post::findOrFail($id);
 
-        $request->merge([
-            'slug' => Str::slug($request->post('title')),
+        $data = [
+            'slug'   => Str::slug($request->post('title')),
             'status' => $request->has('status') ? 'published' : 'draft',
-        ]);
+        ];
 
-        $post->update($request->except([
-            '_method',
-            '_token',
-        ]));
+        // Handle new cover image upload
+        if ($request->hasFile('cover_image')) {
+            // Delete old image if it exists
+            if ($post->cover_image) {
+                Storage::disk('public')->delete($post->cover_image);
+            }
+            $data['cover_image'] = $fileUpload->handle('cover_image', 'covers');
+        }
+
+        $post->update(array_merge(
+            $request->except(['_method', '_token', 'cover_image']),
+            $data
+        ));
 
         // PRG: POST Redirect GET
         return redirect()->route('posts.index');
@@ -115,7 +132,13 @@ class PostController extends Controller
      */
     public function destroy(string $id)
     {
-        Post::destroy($id);
+        // Post::destroy($id);
+        $post = Post::findOrFail($id);
+        $post->delete();
+
+        if ($post->cover_image) {
+            Storage::disk('public')->delete($post->cover_image);
+        }
 
         // PRG: POST Redirect GET
         return redirect()->route('posts.index');
