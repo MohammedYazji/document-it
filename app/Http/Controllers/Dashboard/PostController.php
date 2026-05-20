@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Actions\FileUpload;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\PostRequest;
 use App\Models\Category;
 use App\Models\Post;
 use Illuminate\Http\Request;
@@ -54,19 +55,21 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, FileUpload $fileUpload)
+    public function store(PostRequest $request, FileUpload $fileUpload)
     {
+        $clean = $request->validated();
+
         $cover_image_path = $fileUpload->handle('cover_image', 'covers');
 
         // cause we still not have auth user so merge fake id with the request
-        $request->merge([
+        $data = array_merge($clean , [
             'user_id'     => 1, // TODO: get from auth()->id()
             'slug'        => Str::slug($request->post('title')),
             'status'      => $request->has('status') ? 'published' : 'draft',
             'cover_image' => $cover_image_path,
         ]);
 
-        $post = Post::create($request->except(['_token', 'cover_image']) + ['cover_image' => $cover_image_path]);
+        $post = Post::create($data + ['cover_image' => $cover_image_path]);
 
         // PRG: POST Redirect GET
         return redirect()->route('posts.index');
@@ -100,7 +103,7 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id, FileUpload $fileUpload)
+    public function update(PostRequest $request, string $id, FileUpload $fileUpload)
     {
         $post = Post::findOrFail($id);
 
