@@ -11,7 +11,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Number;
 use Illuminate\Support\Str;
-
 class PostController extends Controller
 {
     /**
@@ -22,11 +21,11 @@ class PostController extends Controller
         $status = $request->query('status', 'all');
 
         $posts_all = Post::query()
-            ->where('user_id', '=', 1) // TODO: get from auth()->id()
+            ->where('user_id', '=', auth()->id())
             ->get();
 
         $query = Post::query()
-            ->where('user_id', '=', 1); // TODO: get from auth()->id()
+            ->where('user_id', '=', auth()->id());
 
         if ($status !== 'all') {
             $query->where('status', '=', $status);
@@ -61,9 +60,8 @@ class PostController extends Controller
 
         $cover_image_path = $fileUpload->handle('cover_image', 'covers');
 
-        // cause we still not have auth user so merge fake id with the request
         $data = array_merge($clean , [
-            'user_id'     => 1, // TODO: get from auth()->id()
+            'user_id'     => auth()->id(),
             'slug'        => Str::slug($request->post('title')),
             'status'      => $request->has('status') ? 'published' : 'draft',
             'cover_image' => $cover_image_path,
