@@ -10,7 +10,7 @@ Route::get('/', HomeController::class)->name('home');
 // Post Routes
 Route::resource("dashboard/posts", PostController::class)->names([
     "index" => "posts.index",
-]);
+])->middleware(['auth', 'verified']);
 
 // Category Routes
 Route::resource("dashboard/categories", CategoryController::class)->names([
