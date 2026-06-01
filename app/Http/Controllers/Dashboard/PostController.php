@@ -84,9 +84,12 @@ class PostController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(int $id)
+    public function show(int $post)
     {
-        $post = Auth::user()->posts()->findOrFail($id);
+        $post = Auth::user()->posts()
+            ->with(['category', 'tags', 'user'])
+            ->withCount('comments')
+            ->findOrFail($post);
 
         return view('dashboard.posts.show', [
             'post' => $post,
