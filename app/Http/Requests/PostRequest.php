@@ -22,11 +22,12 @@ class PostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title'       => 'required|string|max:255|min:3',
-            'content'     => ['required', 'string', 'max:999999', new \App\Rules\Restricted(['spam', 'scam', 'hack'])],
+            'title' => 'required|string|max:255|min:3',
+            'content' => ['required', 'string', 'max:999999', new \App\Rules\Restricted(['spam', 'scam', 'hack'])],
             'cover_image' => 'nullable|image|mimetypes:image/*|dimensions:min_width=400,min_height=400,max_width=2000,max_height=2000',
             'category_id' => 'nullable|exists:categories,id',
-            'status'      => 'nullable|in:published,draft',
+            'status' => 'nullable|in:published,draft',
+            'tags' => ['nullable', 'string', 'max:1000'],
         ];
     }
 
@@ -51,6 +52,7 @@ class PostRequest extends FormRequest
             'content'     => 'post content',
             'cover_image' => 'cover image',
             'category_id' => 'category',
+            'tags'        => 'tags',
         ];
     }
 }
