@@ -3,14 +3,17 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Actions\FileUpload;
+use App\Actions\SyncTags;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PostRequest;
 use App\Models\Category;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Number;
 use Illuminate\Support\Str;
+
 class PostController extends Controller
 {
     /**
@@ -20,18 +23,20 @@ class PostController extends Controller
     {
         $status = $request->query('status', 'all');
 
-        $posts_all = Post::query()
-            ->where('user_id', '=', auth()->id())
+        $user = Auth::user();
+
+        $posts_all = $user->posts()->get();
+
+        $posts = $user->posts()
+            ->with('category', 'user')
+            ->select('id', 'category_id', 'title', 'slug', 'status', 'created_at')
+            // ->addSelect(
+            //     DB::raw('SELECT COUNT(+) FROM comments WHERE comments.post_id = posts.id AS comments_count')
+            // )
+            ->withCount('comments')
+            ->when($status !== 'all', fn ($query) => $query->where('status', $status))
+            ->latest()
             ->get();
-
-        $query = Post::query()
-            ->where('user_id', '=', auth()->id());
-
-        if ($status !== 'all') {
-            $query->where('status', '=', $status);
-        }
-
-        $posts = $query->latest()->get();
 
         return view('dashboard.posts.index', [
             'posts' => $posts,
@@ -54,20 +59,23 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(PostRequest $request, FileUpload $fileUpload)
+    public function store(PostRequest $request, FileUpload $fileUpload, SyncTags $syncTags)
     {
         $clean = $request->validated();
+        $tagsInput = $clean['tags'] ?? null;
+        unset($clean['tags']);
 
         $cover_image_path = $fileUpload->handle('cover_image', 'covers');
 
-        $data = array_merge($clean , [
-            'user_id'     => auth()->id(),
-            'slug'        => Str::slug($request->post('title')),
-            'status'      => $request->has('status') ? 'published' : 'draft',
-            'cover_image' => $cover_image_path,
-        ]);
+        DB::transaction(function () use ($clean, $request, $cover_image_path, $tagsInput, $syncTags) {
+            $post = Auth::user()->posts()->create(array_merge($clean, [
+                'slug'        => Str::slug($request->post('title')),
+                'status'      => $request->has('status') ? 'published' : 'draft',
+                'cover_image' => $cover_image_path,
+            ]));
 
-        $post = Post::create($data + ['cover_image' => $cover_image_path]);
+            $syncTags->handle($post, $tagsInput);
+        });
 
         // PRG: POST Redirect GET
         return redirect()->route('posts.index');
@@ -78,7 +86,7 @@ class PostController extends Controller
      */
     public function show(int $id)
     {
-        $post = Post::findOrFail($id);
+        $post = Auth::user()->posts()->findOrFail($id);
 
         return view('dashboard.posts.show', [
             'post' => $post,
@@ -90,7 +98,7 @@ class PostController extends Controller
      */
     public function edit(int $id)
     {
-        $post = Post::findOrFail($id);
+        $post = Auth::user()->posts()->with('tags')->findOrFail($id);
 
         return view('dashboard.posts.edit', [
             'post'       => $post,
@@ -101,9 +109,9 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(PostRequest $request, string $id, FileUpload $fileUpload)
+    public function update(PostRequest $request, string $id, FileUpload $fileUpload, SyncTags $syncTags)
     {
-        $post = Post::findOrFail($id);
+        $post = Auth::user()->posts()->findOrFail($id);
 
         $data = [
             'slug'   => Str::slug($request->post('title')),
@@ -119,10 +127,14 @@ class PostController extends Controller
             $data['cover_image'] = $fileUpload->handle('cover_image', 'covers');
         }
 
-        $post->update(array_merge(
-            $request->except(['_method', '_token', 'cover_image']),
-            $data
-        ));
+        DB::transaction(function () use ($post, $request, $data, $syncTags) {
+            $post->update(array_merge(
+                $request->except(['_method', '_token', 'cover_image', 'tags']),
+                $data
+            ));
+
+            $syncTags->handle($post, $request->validated('tags'));
+        });
 
         // PRG: POST Redirect GET
         return redirect()->route('posts.index');
