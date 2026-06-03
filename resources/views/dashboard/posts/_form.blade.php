@@ -126,6 +126,19 @@
                     @endif
                 </section>
 
+                <!-- Publish Date -->
+                <section>
+                    <h3 class="font-ui-label text-ui-label text-on-surface mb-4 uppercase tracking-wider">Publish Date</h3>
+                    <div class="relative">
+                        <input type="datetime-local" name="published_at" id="published_at"
+                            value="{{ old('published_at', isset($post) && $post->published_at ? (is_string($post->published_at) ? \Carbon\Carbon::parse($post->published_at)->format('Y-m-d\TH:i') : $post->published_at->format('Y-m-d\TH:i')) : '') }}"
+                            class="w-full bg-white border border-outline-variant rounded-lg px-4 py-2 font-metadata text-metadata text-on-surface focus:ring-2 focus:ring-primary focus:border-primary transition-all">
+                    </div>
+                    @error('published_at')
+                        <p class="mt-2 text-sm text-error font-metadata">{{ $message }}</p>
+                    @enderror
+                </section>
+
                 <!-- Tags -->
                 <section>
                     <h3 class="font-ui-label text-ui-label text-on-surface mb-4 uppercase tracking-wider">Tags</h3>

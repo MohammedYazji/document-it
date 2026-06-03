@@ -141,7 +141,7 @@
                                             </h3>
                                         </a>
                                         <p class="text-metadata font-metadata text-on-surface-variant mt-1">Published on
-                                            {{ $post->created_at->format('M d, Y') }}
+                                            {{ $post->published_at->format('M d, Y') }}
                                         </p>
                                     </div>
                                     <div class="md:col-span-2 flex flex-col">

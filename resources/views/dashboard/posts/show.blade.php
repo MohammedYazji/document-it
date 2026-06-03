@@ -43,8 +43,8 @@
                 <div class="flex flex-wrap items-center gap-3 font-metadata text-metadata text-on-surface-variant">
                     <span class="text-primary font-semibold">{{ $post->category->name }}</span>
                     <span>•</span>
-                    <time datetime="{{ $post->created_at->toDateString() }}">
-                        {{ $post->created_at->format('M d, Y') }}
+                    <time datetime="{{ $post->published_at->toDateString() }}">
+                        {{ $post->published_at->format('M d, Y') }}
                     </time>
                     <span>•</span>
                     <span>{{ ceil(str_word_count(strip_tags($post->content)) / 200) }} min read</span>
@@ -70,6 +70,12 @@
                 <h1 class="font-display-lg text-display-lg text-on-background leading-tight">
                     {{ $post->title }}
                 </h1>
+
+                @if ($post->published_at)
+                    <div class="font-metadata text-metadata text-on-surface-variant">
+                        Published at: <time datetime="{{ $post->published_at->toIso8601String() }}">{{ $post->published_at->format('M d, Y h:i A') }}</time>
+                    </div>
+                @endif
 
                 @if ($post->tags->isNotEmpty())
                     <div class="flex flex-wrap gap-2">

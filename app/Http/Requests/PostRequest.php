@@ -28,6 +28,7 @@ class PostRequest extends FormRequest
             'category_id' => 'nullable|exists:categories,id',
             'status' => 'nullable|in:published,draft',
             'tags' => ['nullable', 'string', 'max:1000'],
+            'published_at' => 'nullable|date',
         ];
     }
 
