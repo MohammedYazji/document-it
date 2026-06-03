@@ -133,4 +133,16 @@ class Post extends Model
             get: fn() => $this->published_at ?? $this->created_at,
         );
     }
+
+    public function wordCount(): int
+    {
+        return str_word_count(strip_tags($this->content ?? ''));
+    }
+
+    public function readTime(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => (int) ceil($this->wordCount() / 200)
+        )->shouldCache();
+    }
 }
