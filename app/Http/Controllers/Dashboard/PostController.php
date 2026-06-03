@@ -29,12 +29,13 @@ class PostController extends Controller
 
         $posts = $user->posts()
             ->with('category', 'user')
-            ->select('id', 'category_id', 'title', 'slug', 'status', 'created_at', 'published_at')
+            ->select('id', 'category_id', 'title', 'slug', 'status', 'created_at', 'published_at', 'deleted_at')
             // ->addSelect(
             //     DB::raw('SELECT COUNT(+) FROM comments WHERE comments.post_id = posts.id AS comments_count')
             // )
             ->withCount('comments')
             ->when($status !== 'all', fn ($query) => $query->where('status', $status))
+            ->withTrashed()
             ->latest()
             ->get();
 
@@ -144,19 +145,41 @@ class PostController extends Controller
     }
 
     /**
+     * Restore the specified soft-deleted resource.
+     */
+    public function restore(string $id)
+    {
+        $post = Auth::user()->posts()->onlyTrashed()->findOrFail($id);
+        $post->restore();
+
+        return redirect()->route('posts.index')->with('success', 'Post restored successfully.');
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
-        // Post::destroy($id);
-        $post = Post::findOrFail($id);
+        $post = Auth::user()->posts()->findOrFail($id);
         $post->delete();
 
+        // PRG: POST Redirect GET
+        return redirect()->route('posts.index')->with('success', 'Post sent to trash.');
+    }
+
+    /**
+     * Permanently remove the specified soft-deleted resource from storage.
+     */
+    public function forceDelete(string $id)
+    {
+        $post = Auth::user()->posts()->onlyTrashed()->findOrFail($id);
+        
         if ($post->cover_image) {
             Storage::disk('public')->delete($post->cover_image);
         }
+        
+        $post->forceDelete();
 
-        // PRG: POST Redirect GET
-        return redirect()->route('posts.index');
+        return redirect()->route('posts.index')->with('success', 'Post permanently deleted.');
     }
 }

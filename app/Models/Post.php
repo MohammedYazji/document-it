@@ -8,8 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 class Post extends Model
 {
+    use SoftDeletes;
     protected $casts = [
         "published_at"=> "datetime",
         "meta" => "json",
