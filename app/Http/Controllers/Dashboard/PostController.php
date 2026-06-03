@@ -29,7 +29,7 @@ class PostController extends Controller
 
         $posts = $user->posts()
             ->with('category', 'user')
-            ->select('id', 'category_id', 'title', 'slug', 'status', 'created_at')
+            ->select('id', 'category_id', 'title', 'slug', 'status', 'created_at', 'published_at')
             // ->addSelect(
             //     DB::raw('SELECT COUNT(+) FROM comments WHERE comments.post_id = posts.id AS comments_count')
             // )

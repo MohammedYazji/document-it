@@ -26,6 +26,7 @@ class Post extends Model
         "views",
         "excerpt",
         "cover_image",
+        "published_at",
     ];
 
     /** The category this post belongs to */
@@ -75,5 +76,13 @@ class Post extends Model
 
             return asset('images/default-thumbnail.png');
         });
+    }
+
+    public function publishedAt(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $value ? \Carbon\Carbon::parse($value) : $this->created_at,
+            set: fn ($value) => $value ? \Carbon\Carbon::parse($value)->format('Y-m-d H:i:s') : null,
+        );
     }
 }
