@@ -121,7 +121,7 @@ class Post extends Model
         return new Attribute(
             get: function () {
                 return $this->cover_image
-                    ? Storage::disk('public')->url($this->cover_image)
+                    ? asset('storage/' . $this->cover_image)
                     : asset('images/default-thumbnail.jpg');
             }
         );
