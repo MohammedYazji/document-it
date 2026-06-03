@@ -16,7 +16,7 @@
                 <span>•</span>
                 <span>{{ $post->publish_time->format('M d, Y') }}</span>
                 <span>•</span>
-                <span>{{ ceil(str_word_count(strip_tags($post->content)) / 200) }} min read</span>
+                <span>{{ $post->read_time }} min read</span>
             </div>
             <h1 class="font-display-lg text-[40px] md:text-[56px] leading-tight text-on-surface">
                 {{ $post->title }}

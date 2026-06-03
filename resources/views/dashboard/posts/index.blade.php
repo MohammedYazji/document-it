@@ -133,7 +133,7 @@
                                 <div class="flex-grow grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
                                     <div class="md:col-span-6">
                                         <span class="text-metadata font-metadata text-primary mb-1 block">{{ $post->category->name }} •
-                                            {{ ceil(str_word_count($post->content) / 200) }} min read</span>
+                                            {{ $post->read_time }} min read</span>
                                         <a href="{{ route('posts.show', $post->id) }}">
                                             <h3
                                                 class="font-headline-md text-[20px] leading-snug group-hover:text-primary transition-colors">
