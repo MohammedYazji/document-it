@@ -21,7 +21,7 @@ class OwnerScope implements Scope
                 return; // skip adding global scope for admin users
             }
 
-            if (Route::is('dashboard.*')) {
+            if (request()->is('dashboard*')) {
                 $builder->where('user_id', $user->id);
             }
         }
