@@ -115,13 +115,13 @@
                                 <a class="font-display-lg-mobile text-display-lg-mobile font-bold text-on-surface"
                                         href="{{route('home')}}">{{config('app.name')}}</a>
                                 <nav class="hidden md:flex items-center gap-6">
-                                        <a class="text-primary font-bold border-b-2 border-primary pb-1 font-ui-label text-ui-label hover:text-primary transition-colors duration-200"
-                                                href="{{ route('posts.index') }}">Feed</a>
-                                        <a class="text-on-surface-variant font-medium font-ui-label text-ui-label hover:text-primary transition-colors duration-200"
+                                        <a class="{{ request()->routeIs('home') ? 'text-primary font-bold border-b-2 border-primary' : 'text-on-surface-variant font-medium border-b-2 border-transparent' }} pb-1 font-ui-label text-ui-label hover:text-primary transition-colors duration-200"
+                                                href="{{ route('home') }}">Feed</a>
+                                        <a class="text-on-surface-variant font-medium border-b-2 border-transparent pb-1 font-ui-label text-ui-label hover:text-primary transition-colors duration-200"
                                                 href="#">Authors</a>
-                                        <a class="text-on-surface-variant font-medium font-ui-label text-ui-label hover:text-primary transition-colors duration-200"
+                                        <a class="{{ request()->routeIs('posts.*') ? 'text-primary font-bold border-b-2 border-primary' : 'text-on-surface-variant font-medium border-b-2 border-transparent' }} pb-1 font-ui-label text-ui-label hover:text-primary transition-colors duration-200"
                                                 href="{{ route('posts.index') }}">Dashboard</a>
-                                        <a class="text-on-surface-variant font-medium font-ui-label text-ui-label hover:text-primary transition-colors duration-200"
+                                        <a class="{{ request()->routeIs('categories.*') ? 'text-primary font-bold border-b-2 border-primary' : 'text-on-surface-variant font-medium border-b-2 border-transparent' }} pb-1 font-ui-label text-ui-label hover:text-primary transition-colors duration-200"
                                                 href="{{ route('categories.index') }}">Categories</a>
                                 </nav>
                         </div>
