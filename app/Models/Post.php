@@ -3,48 +3,92 @@
 namespace App\Models;
 
 use App\Enums\PostStatus;
+use App\Models\Scopes\OwnerScope;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Attributes\ScopedBy;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
-use Illuminate\Database\Eloquent\SoftDeletes;
-
+#[ScopedBy(OwnerScope::class)]
 class Post extends Model
 {
     use SoftDeletes;
-    protected $casts = [
-        "published_at"=> "datetime",
-        "meta" => "json",
-        "status" => PostStatus::class,
-    ];
+
+    protected $connection = 'mysql';
+    protected $table = 'posts';
+    protected $primaryKey = 'id';
+    public $incrementing = true;
+    protected $keyType = 'int';
+    public $timestamps = true;
 
     protected $fillable = [
-        "title",
-        "content",
-        "slug",
-        "user_id",
-        "category_id",
-        "status",
-        "views",
-        "excerpt",
-        "cover_image",
-        "published_at",
-        "meta",
+        'user_id',
+        'category_id',
+        'title',
+        'content',
+        'slug',
+        'excerpt',
+        'cover_image',
+        'status',
+        'views',
+        'published_at',
+        'meta',
     ];
 
-    /** The category this post belongs to */
-    public function category(): BelongsTo
+    protected function casts(): array
     {
-        return $this->belongsTo(Category::class)->withDefault([
-            'name' => 'uncategorized',
-            'slug' => 'uncategorized',
-        ]);
+        return [
+            'published_at' => 'datetime',
+            'meta' => 'json',
+            'status' => PostStatus::class,
+        ];
     }
 
-    public function user()
+    protected static function booted()
+    {
+        //static::addGlobalScope('owner', new OwnerScope);
+    }
+
+    public function scopePublished(Builder $builder, string|\DateTime|null $time = null)
+    {
+        $builder
+            //->withoutGlobalScope('owner')
+            ->where('status', PostStatus::Published)
+            ->where(function ($query) use ($time) {
+                $query->whereNull('published_at')
+                    ->orWhere('published_at', '<=', $time ?? now());
+            });
+    }
+
+    public function scopeStatus(Builder $builder, string|PostStatus $status)
+    {
+        $builder->where('status', $status);
+    }
+
+    public function scopeSlug(Builder $builder, string $slug)
+    {
+        $builder->where('slug', $slug);
+    }
+
+    // protected $guarded = [];
+
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class, 'category_id', 'id')
+            ->withDefault([
+                'name' => 'Uncategorized',
+                'slug' => 'uncategorized',
+            ]);
     }
 
     public function comments()
@@ -60,33 +104,33 @@ class Post extends Model
     public function content(): Attribute
     {
         return new Attribute(
-            set: fn($value) => strip_tags($value, '<script><h1>')
+            set: fn($value) => strip_tags($value, '<h2><h3><h4><h5><h6><p><a><ul><ol><li><br><strong><em><img><video><audio>'),
         );
     }
 
     public function title(): Attribute
     {
         return new Attribute(
-            get: fn($value) => ucwords($value)
+            get: fn($value) => ucwords($value),
+            set: fn($value) => strip_tags($value),
         );
     }
 
     public function thumbnailUrl(): Attribute
     {
-        return Attribute::get(function (): string {
-            if ($this->cover_image) {
-                return Storage::disk('public')->url($this->cover_image);
+        return new Attribute(
+            get: function () {
+                return $this->cover_image
+                    ? Storage::disk('public')->url($this->cover_image)
+                    : asset('images/default-thumbnail.jpg');
             }
-
-            return asset('images/default-thumbnail.png');
-        });
+        );
     }
 
-    public function publishedAt(): Attribute
+    public function publishTime(): Attribute
     {
-        return Attribute::make(
-            get: fn ($value) => $value ? \Carbon\Carbon::parse($value) : $this->created_at,
-            set: fn ($value) => $value ? \Carbon\Carbon::parse($value)->format('Y-m-d H:i:s') : null,
+        return new Attribute(
+            get: fn() => $this->published_at ?? $this->created_at,
         );
     }
 }
