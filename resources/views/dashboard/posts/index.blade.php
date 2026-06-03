@@ -158,28 +158,52 @@
                                         </div>
                                     </div>
                                     <div class="md:col-span-2">
-                                        <span
-                                            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-{{ $post->status->getColor() }}-50 text-{{ $post->status->getColor() }}-700 text-[12px] font-bold border border-{{ $post->status->getColor() }}-200">
-                                            <span class="h-1.5 w-1.5 rounded-full bg-{{ $post->status->getColor() }}-600"></span> {{ $post->status->getLabel() }}
-                                        </span>
+                                        @if ($post->trashed())
+                                            <span
+                                                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-700 text-[12px] font-bold border border-red-200">
+                                                <span class="h-1.5 w-1.5 rounded-full bg-red-600"></span> Deleted
+                                            </span>
+                                        @else
+                                            <span
+                                                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-{{ $post->status->getColor() }}-50 text-{{ $post->status->getColor() }}-700 text-[12px] font-bold border border-{{ $post->status->getColor() }}-200">
+                                                <span class="h-1.5 w-1.5 rounded-full bg-{{ $post->status->getColor() }}-600"></span> {{ $post->status->getLabel() }}
+                                            </span>
+                                        @endif
                                     </div>
                                     <div
                                         class="md:col-span-2 flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <a href="{{ route('posts.edit', $post->id) }}"
-                                            class="p-2 text-on-surface-variant hover:bg-surface-container hover:text-primary rounded-lg transition-all"
-                                            title="Edit">
-                                            <span class="material-symbols-outlined" data-icon="edit">edit</span>
-                                        </a>
-                                        <form action="{{ route('posts.destroy', $post->id) }}" method="POST" class="inline"
-                                            onsubmit="return confirm('Are you sure you want to delete this post?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
-                                                class="p-2 text-error hover:bg-surface-container rounded-lg transition-all"
-                                                title="Delete">
-                                                <span class="material-symbols-outlined">delete</span>
-                                            </button>
-                                        </form>
+                                        @if ($post->trashed())
+                                            <form action="{{ route('posts.restore', $post->id) }}" method="POST" class="inline">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button type="submit" class="p-2 text-on-surface-variant hover:bg-surface-container hover:text-primary rounded-lg transition-all" title="Restore">
+                                                    <span class="material-symbols-outlined" data-icon="restore">restore_from_trash</span>
+                                                </button>
+                                            </form>
+                                            <form action="{{ route('posts.forceDelete', $post->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to permanently delete this post? This cannot be undone.');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="p-2 text-error hover:bg-surface-container rounded-lg transition-all" title="Hard Delete">
+                                                    <span class="material-symbols-outlined">delete_forever</span>
+                                                </button>
+                                            </form>
+                                        @else
+                                            <a href="{{ route('posts.edit', $post->id) }}"
+                                                class="p-2 text-on-surface-variant hover:bg-surface-container hover:text-primary rounded-lg transition-all"
+                                                title="Edit">
+                                                <span class="material-symbols-outlined" data-icon="edit">edit</span>
+                                            </a>
+                                            <form action="{{ route('posts.destroy', $post->id) }}" method="POST" class="inline"
+                                                onsubmit="return confirm('Are you sure you want to send this post to trash?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                    class="p-2 text-error hover:bg-surface-container rounded-lg transition-all"
+                                                    title="Move to Trash">
+                                                    <span class="material-symbols-outlined">delete</span>
+                                                </button>
+                                            </form>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
