@@ -5,7 +5,8 @@ use App\Http\Controllers\Dashboard\PostController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', HomeController::class)->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/posts/{slug}', [HomeController::class, 'show'])->name('post.show');
 
 // Post Routes
 Route::patch('dashboard/posts/{post}/restore', [PostController::class, 'restore'])

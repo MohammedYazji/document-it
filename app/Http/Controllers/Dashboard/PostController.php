@@ -25,10 +25,9 @@ class PostController extends Controller
 
         $user = Auth::user();
 
-        $posts_all = $user->posts()->get();
+        $posts_all = Post::get();
 
-        $posts = $user->posts()
-            ->with('category', 'user')
+        $posts = Post::with('category', 'user')
             ->select('id', 'category_id', 'title', 'slug', 'status', 'created_at', 'published_at', 'deleted_at')
             // ->addSelect(
             //     DB::raw('SELECT COUNT(+) FROM comments WHERE comments.post_id = posts.id AS comments_count')
@@ -87,8 +86,7 @@ class PostController extends Controller
      */
     public function show(int $post)
     {
-        $post = Auth::user()->posts()
-            ->with(['category', 'tags', 'user'])
+        $post = Post::with(['category', 'tags', 'user'])
             ->withCount('comments')
             ->findOrFail($post);
 
@@ -102,7 +100,7 @@ class PostController extends Controller
      */
     public function edit(int $id)
     {
-        $post = Auth::user()->posts()->with('tags')->findOrFail($id);
+        $post = Post::with('tags')->findOrFail($id);
 
         return view('dashboard.posts.edit', [
             'post'       => $post,
@@ -115,7 +113,7 @@ class PostController extends Controller
      */
     public function update(PostRequest $request, string $id, FileUpload $fileUpload, SyncTags $syncTags)
     {
-        $post = Auth::user()->posts()->findOrFail($id);
+        $post = Post::findOrFail($id);
 
         $data = [
             'slug'   => Str::slug($request->post('title')),
@@ -149,7 +147,7 @@ class PostController extends Controller
      */
     public function restore(string $id)
     {
-        $post = Auth::user()->posts()->onlyTrashed()->findOrFail($id);
+        $post = Post::onlyTrashed()->findOrFail($id);
         $post->restore();
 
         return redirect()->route('posts.index')->with('success', 'Post restored successfully.');
@@ -160,7 +158,7 @@ class PostController extends Controller
      */
     public function destroy(string $id)
     {
-        $post = Auth::user()->posts()->findOrFail($id);
+        $post = Post::findOrFail($id);
         $post->delete();
 
         // PRG: POST Redirect GET
@@ -172,7 +170,7 @@ class PostController extends Controller
      */
     public function forceDelete(string $id)
     {
-        $post = Auth::user()->posts()->onlyTrashed()->findOrFail($id);
+        $post = Post::onlyTrashed()->findOrFail($id);
         
         if ($post->cover_image) {
             Storage::disk('public')->delete($post->cover_image);
