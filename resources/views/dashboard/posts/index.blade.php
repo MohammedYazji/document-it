@@ -158,22 +158,10 @@
                                         </div>
                                     </div>
                                     <div class="md:col-span-2">
-                                        @if($post->status === 'published')
-                                            <span
-                                                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 text-green-700 text-[12px] font-bold border border-green-200">
-                                                <span class="h-1.5 w-1.5 rounded-full bg-green-600"></span> Published
-                                            </span>
-                                        @elseif($post->status === 'draft')
-                                            <span
-                                                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-yellow-50 text-yellow-700 text-[12px] font-bold border border-yellow-200">
-                                                <span class="h-1.5 w-1.5 rounded-full bg-yellow-600"></span> Draft
-                                            </span>
-                                        @else
-                                            <span
-                                                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-50 text-gray-700 text-[12px] font-bold border border-gray-200">
-                                                <span class="h-1.5 w-1.5 rounded-full bg-gray-600"></span> Archived
-                                            </span>
-                                        @endif
+                                        <span
+                                            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-{{ $post->status->getColor() }}-50 text-{{ $post->status->getColor() }}-700 text-[12px] font-bold border border-{{ $post->status->getColor() }}-200">
+                                            <span class="h-1.5 w-1.5 rounded-full bg-{{ $post->status->getColor() }}-600"></span> {{ $post->status->getLabel() }}
+                                        </span>
                                     </div>
                                     <div
                                         class="md:col-span-2 flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">

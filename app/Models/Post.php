@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PostStatus;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,6 +10,12 @@ use Illuminate\Support\Facades\Storage;
 
 class Post extends Model
 {
+    protected $casts = [
+        "published_at"=> "datetime",
+        "meta" => "json",
+        "status" => PostStatus::class,
+    ];
+
     protected $fillable = [
         "title",
         "content",
