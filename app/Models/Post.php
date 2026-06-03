@@ -27,6 +27,7 @@ class Post extends Model
         "excerpt",
         "cover_image",
         "published_at",
+        "meta",
     ];
 
     /** The category this post belongs to */

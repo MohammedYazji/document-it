@@ -41,6 +41,57 @@
                     <p class="mt-2 text-sm text-error font-metadata pl-2">{{ $message }}</p>
                 @enderror
             </div>
+
+            <!-- Meta Section -->
+            <div class="mt-12 pt-8 border-t border-outline-variant space-y-6">
+                <h3 class="font-display-sm text-display-sm text-on-surface mb-6">SEO & Metadata</h3>
+
+                <div class="space-y-4">
+                    <div>
+                        <label for="meta_title" class="block font-ui-label text-ui-label text-on-surface mb-2">Meta Title</label>
+                        <input type="text" name="meta[title]" id="meta_title"
+                            value="{{ old('meta.title', $post->meta['title'] ?? '') }}"
+                            class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 font-body-md text-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                            placeholder="SEO optimized title">
+                        @error('meta.title')
+                            <p class="mt-2 text-sm text-error font-metadata">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label for="meta_description" class="block font-ui-label text-ui-label text-on-surface mb-2">Meta Description</label>
+                        <textarea name="meta[description]" id="meta_description" rows="3"
+                            class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 font-body-md text-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                            placeholder="Brief description for search engines">{{ old('meta.description', $post->meta['description'] ?? '') }}</textarea>
+                        @error('meta.description')
+                            <p class="mt-2 text-sm text-error font-metadata">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="meta_keywords" class="block font-ui-label text-ui-label text-on-surface mb-2">Keywords</label>
+                            <input type="text" name="meta[keywords]" id="meta_keywords"
+                                value="{{ old('meta.keywords', $post->meta['keywords'] ?? '') }}"
+                                class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 font-body-md text-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                                placeholder="e.g. laravel, php, development">
+                            @error('meta.keywords')
+                                <p class="mt-2 text-sm text-error font-metadata">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div>
+                            <label for="meta_url" class="block font-ui-label text-ui-label text-on-surface mb-2">URL</label>
+                            <input type="url" name="meta[url]" id="meta_url"
+                                value="{{ old('meta.url', $post->meta['url'] ?? '') }}"
+                                class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 font-body-md text-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                                placeholder="https://example.com/slug">
+                            @error('meta.url')
+                                <p class="mt-2 text-sm text-error font-metadata">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Sidebar: Publishing Settings -->

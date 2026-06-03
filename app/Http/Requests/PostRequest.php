@@ -27,8 +27,13 @@ class PostRequest extends FormRequest
             'cover_image' => 'nullable|image|mimetypes:image/*|dimensions:min_width=400,min_height=400,max_width=2000,max_height=2000',
             'category_id' => 'nullable|exists:categories,id',
             'status' => 'nullable|in:published,draft',
-            'tags' => ['nullable', 'string', 'max:1000'],
+            'tags' => 'nullable|string|max:1000',
             'published_at' => 'nullable|date',
+            'meta'=> 'nullable|array',
+            'meta.title' => 'nullable|string|max:255',
+            'meta.description' => 'nullable|string|max:500',
+            'meta.keywords' => 'nullable|string|max:255',
+            'meta.url' => 'nullable|url',
         ];
     }
 
