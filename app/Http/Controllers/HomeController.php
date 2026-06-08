@@ -8,7 +8,7 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
-        $posts = \App\Models\Post::query()->published()->latest()->get();
+        $posts = \App\Models\Post::query()->published()->latest()->paginate(3);
 
         return view('home', compact('posts'));
     }

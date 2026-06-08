@@ -51,9 +51,12 @@
   <section class="col-span-1 md:col-span-7 space-y-12">
     @if($posts->isNotEmpty())
     @php
-        $featuredPost = $posts->first();
-        $regularPosts = $posts->skip(1);
+        $showFeatured = $posts->onFirstPage();
+        $displayPosts = $showFeatured ? $posts->skip(1) : $posts;
     @endphp
+
+    @if($showFeatured)
+    @php $featuredPost = $posts->first(); @endphp
     <!-- Featured Article (Bento Style) -->
     <article
       class="group border border-outline-variant rounded-xl overflow-hidden bg-white hover:border-primary transition-colors duration-300">
@@ -93,9 +96,11 @@
         </div>
       </div>
     </article>
+    @endif
+
     <!-- Grid of Regular Articles -->
     <div class="grid grid-cols-1 gap-12">
-      @foreach($regularPosts as $post)
+      @foreach($displayPosts as $post)
       <article class="flex flex-col md:flex-row gap-8 group">
         <a href="{{ route('post.show', $post->slug) }}" class="w-full md:w-1/3 aspect-video md:aspect-square overflow-hidden rounded-lg border border-outline-variant block">
           <img alt="{{ $post->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
@@ -122,18 +127,15 @@
       </article>
       @endforeach
     </div>
+    <div class="pt-12">
+      {{ $posts->links() }}
+    </div>
     @else
     <div class="p-12 text-center border border-outline-variant rounded-xl bg-white">
         <h2 class="font-headline-md text-headline-md text-on-surface mb-4">No posts found</h2>
         <p class="text-on-surface-variant font-body-md">Check back later for new content!</p>
     </div>
     @endif
-    <div class="pt-8 flex justify-center">
-      <button
-        class="px-8 py-3 border border-primary text-primary font-ui-button text-ui-button rounded-lg hover:bg-primary-container/5 transition-all">
-        Load More Stories
-      </button>
-    </div>
   </section>
   <!-- Right Sidebar: Trending & Who to Follow -->
   <aside class="hidden lg:block lg:col-span-3 space-y-12">

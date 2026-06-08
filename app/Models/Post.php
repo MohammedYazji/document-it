@@ -122,7 +122,7 @@ class Post extends Model
             get: function () {
                 return $this->cover_image
                     ? asset('storage/' . $this->cover_image)
-                    : asset('images/default-thumbnail.jpg');
+                    : asset('images/default-thumbnail.png');
             }
         );
     }
