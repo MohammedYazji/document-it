@@ -17,6 +17,11 @@
                 <span>{{ $post->publish_time->format('M d, Y') }}</span>
                 <span>•</span>
                 <span>{{ $post->read_time }} min read</span>
+                <span>•</span>
+                <span class="flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[18px]">visibility</span>
+                    {{ $post->views }} views
+                </span>
             </div>
             <h1 class="font-display-lg text-[40px] md:text-[56px] leading-tight text-on-surface">
                 {{ $post->title }}

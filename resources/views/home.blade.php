@@ -72,6 +72,11 @@
           <span>{{ $featuredPost->publish_time->format('M d, Y') }}</span>
           <span>•</span>
           <span>{{ $featuredPost->category->name }}</span>
+          <span>•</span>
+          <span class="flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">visibility</span>
+            {{ $featuredPost->views }}
+          </span>
         </div>
         <a href="{{ route('post.show', $featuredPost->slug) }}">
             <h2
@@ -111,6 +116,11 @@
             <span class="text-primary font-bold">{{ $post->category->name }}</span>
             <span>•</span>
             <span>{{ $post->publish_time->format('M d, Y') }}</span>
+            <span>•</span>
+            <span class="flex items-center gap-1">
+              <span class="material-symbols-outlined text-[16px]">visibility</span>
+              {{ $post->views }}
+            </span>
           </div>
           <a href="{{ route('post.show', $post->slug) }}">
               <h3

@@ -90,6 +90,8 @@ class PostController extends Controller
             ->withCount('comments')
             ->findOrFail($post);
 
+        event('posts.view', $post);
+
         return view('posts.show', [
             'post' => $post,
         ]);

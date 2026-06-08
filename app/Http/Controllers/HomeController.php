@@ -17,6 +17,8 @@ class HomeController extends Controller
     {
         $post = \App\Models\Post::query()->published()->where('slug', $slug)->firstOrFail();
 
+        event('posts.view', $post);
+
         return view('posts.show', compact('post'));
     }
 }
