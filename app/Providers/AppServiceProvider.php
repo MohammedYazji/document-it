@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Listeners\IncrementPostViews;
+use App\Models\Category;
 use App\Models\Post;
+use App\Observers\CategoryObserver;
 use App\Observers\PostObserver;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Event;
@@ -34,5 +36,6 @@ class AppServiceProvider extends ServiceProvider
         );
 
         Post::observe(PostObserver::class);
+        Category::observe(CategoryObserver::class);
     }
 }
