@@ -7,14 +7,10 @@ use App\Models\Category;
 class CategoryObserver
 {
     /**
-     * Handle the Category "deleted" event.
+     * Handle the Category "deleting" event.
      */
-    public function deleted(Category $category): void
+    public function deleting(Category $category): void
     {
-        if ($category->isForceDeleting()) {
-            return;
-        }
-
         $category->posts()->delete();
     }
 
