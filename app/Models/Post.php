@@ -52,6 +52,21 @@ class Post extends Model
     protected static function booted()
     {
         //static::addGlobalScope('owner', new OwnerScope);
+
+        static::creating(function (Post $post) {
+            if (!$post->slug) {
+                $post->slug = \Illuminate\Support\Str::slug($post->title);
+            }
+            if (!$post->user_id) {
+                $post->user_id = Auth::id();
+            }
+        });
+
+        static::forceDeleted(function (Post $post) {
+            if ($post->cover_image) {
+                Storage::disk('public')->delete($post->cover_image);
+            }
+        });
     }
 
     public function scopePublished(Builder $builder, string|\DateTime|null $time = null)

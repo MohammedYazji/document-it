@@ -68,8 +68,7 @@ class PostController extends Controller
         $cover_image_path = $fileUpload->handle('cover_image', 'covers');
 
         DB::transaction(function () use ($clean, $request, $cover_image_path, $tagsInput, $syncTags) {
-            $post = Auth::user()->posts()->create(array_merge($clean, [
-                'slug'        => Str::slug($request->post('title')),
+            $post = Post::create(array_merge($clean, [
                 'status'      => $request->has('status') ? 'published' : 'draft',
                 'cover_image' => $cover_image_path,
             ]));
@@ -173,10 +172,6 @@ class PostController extends Controller
     public function forceDelete(string $id)
     {
         $post = Post::onlyTrashed()->findOrFail($id);
-        
-        if ($post->cover_image) {
-            Storage::disk('public')->delete($post->cover_image);
-        }
         
         $post->forceDelete();
 
