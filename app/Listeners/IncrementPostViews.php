@@ -3,18 +3,10 @@
 namespace App\Listeners;
 
 use App\Models\Post;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Cookie;
 
 class IncrementPostViews
 {
-    /**
-     * Create the event listener.
-     */
-    public function __construct()
-    {
-        //
-    }
-
     /**
      * Handle the event.
      */
@@ -24,15 +16,23 @@ class IncrementPostViews
             $post = $post[0];
         }
 
-        if (!($post instanceof \App\Models\Post)) {
+        if (!($post instanceof Post)) {
             return;
         }
 
-        $viewed = Session::get('viewed_posts', []);
+        $cookie = Cookie::get('post-views');
+        $viewed = $cookie ? unserialize($cookie) : [];
+
+        if (!is_array($viewed)) {
+            $viewed = [];
+        }
 
         if (!in_array($post->id, $viewed)) {
             $post->increment('views');
-            Session::push('viewed_posts', $post->id);
+            $viewed[] = $post->id;
+
+            // Set cookie for 2 minutes
+            Cookie::queue('post-views', serialize($viewed), 2);
         }
     }
 }
