@@ -22,5 +22,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         \Illuminate\Pagination\Paginator::useTailwind();
+
+        \Illuminate\Support\Facades\Event::listen(
+            'posts.view',
+            \App\Listeners\IncrementPostViews::class
+        );
     }
 }
