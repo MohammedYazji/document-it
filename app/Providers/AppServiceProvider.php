@@ -2,6 +2,11 @@
 
 namespace App\Providers;
 
+use App\Listeners\IncrementPostViews;
+use App\Models\Post;
+use App\Observers\PostObserver;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -21,11 +26,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        \Illuminate\Pagination\Paginator::useTailwind();
+        Paginator::useTailwind();
 
-        \Illuminate\Support\Facades\Event::listen(
+        Event::listen(
             'posts.view',
-            \App\Listeners\IncrementPostViews::class
+            IncrementPostViews::class
         );
+
+        Post::observe(PostObserver::class);
     }
 }
