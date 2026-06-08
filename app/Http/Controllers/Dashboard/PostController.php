@@ -36,7 +36,7 @@ class PostController extends Controller
             ->when($status !== 'all', fn ($query) => $query->where('status', $status))
             ->withTrashed()
             ->latest()
-            ->get();
+            ->paginate(3);
 
         return view('dashboard.posts.index', [
             'posts' => $posts,

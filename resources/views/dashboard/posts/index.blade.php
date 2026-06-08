@@ -141,7 +141,7 @@
                                             </h3>
                                         </a>
                                         <p class="text-metadata font-metadata text-on-surface-variant mt-1">Published on
-                                            {{ $post->published_at->format('M d, Y') }}
+                                            {{ $post->published_at?->format('M d, Y') }}
                                         </p>
                                     </div>
                                     <div class="md:col-span-2 flex flex-col">
@@ -224,23 +224,8 @@
 
                 <!-- Pagination -->
                 @if ($posts->isNotEmpty())
-                    <div class="flex items-center justify-between pt-8">
-                        <span class="text-metadata font-metadata text-on-surface-variant">Showing 1 to {{ $posts->count() }}
-                            of {{ $posts->count() }} posts</span>
-                        <div class="flex gap-2">
-                            <button
-                                class="p-2 border border-outline-variant rounded-lg hover:bg-surface-container-low disabled:opacity-30"
-                                disabled="">
-                                <span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
-                            </button>
-                            <button
-                                class="h-10 w-10 border border-primary bg-primary text-on-primary rounded-lg font-ui-label">1</button>
-                            <button
-                                class="p-2 border border-outline-variant rounded-lg hover:bg-surface-container-low disabled:opacity-30"
-                                disabled="">
-                                <span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
-                            </button>
-                        </div>
+                    <div class="pt-8">
+                        {{ $posts->links() }}
                     </div>
                 @endif
             </div>
