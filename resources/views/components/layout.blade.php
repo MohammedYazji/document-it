@@ -134,11 +134,15 @@
                                                 placeholder="Search..." type="text" />
                                 </div>
                                 <div class="flex items-center gap-2">
-                                        <button
-                                                class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-all">
+                                        @php $unreadCount = Auth::check() ? Auth::user()->unreadNotifications()->count() : 0 @endphp
+                                        <a href="{{ route('notifications.index') }}"
+                                                class="relative p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-all inline-flex items-center">
                                                 <span class="material-symbols-outlined"
                                                         data-icon="notifications">notifications</span>
-                                        </button>
+                                                @if ($unreadCount > 0)
+                                                    <span class="absolute -top-0.5 -right-0.5 w-4 h-4 bg-error text-white text-[10px] font-bold rounded-full flex items-center justify-center">{{ $unreadCount > 9 ? '9+' : $unreadCount }}</span>
+                                                @endif
+                                        </a>
                                         <button
                                                 class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-all">
                                                 <span class="material-symbols-outlined"
