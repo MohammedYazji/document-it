@@ -22,10 +22,13 @@ class FollowNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject("{$this->follower->name} followed you")
+            ->subject("New Follower")
+            ->greeting("Hi {$notifiable->name},")
             ->line("{$this->follower->name} started following you on Document It.")
             ->action('View Profile', route('users.profile', $this->follower->username))
-            ->line('Thank you for using Document It!');
+            ->line('Thank you for using Document It!')
+            ->salutation('Best Regards')
+            ->from('follow@doc.it', 'doc.it');
     }
 
     public function toDatabase(object $notifiable): array
@@ -36,7 +39,7 @@ class FollowNotification extends Notification
             'link'  => route('users.profile', $this->follower->username),
             'meta'  => [
                 'follower_id'     => $this->follower->id,
-                'follower_avatar' => $this->follower->avatoar,
+                'follower_avatar' => $this->follower->avatar,
             ],
         ];
     }

@@ -18,7 +18,7 @@ return new class extends Migration {
             $table->string('password');
             $table->rememberToken();
             $table->string('username')->unique();
-            $table->string('avatoar')->nullable();
+            $table->string('avatar')->nullable();
             $table->char('country_code', 2)->nullable();
             $table->string('timezone')->default('UTC');
             $table->enum('status', ['active', 'inactive', 'suspended'])->default('active');
