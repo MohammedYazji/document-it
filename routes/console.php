@@ -10,3 +10,5 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::job(new SendNewPostsSummary)->weeklyOn(1, '15:43');
+
+Schedule::command('model:purne')->daily();
