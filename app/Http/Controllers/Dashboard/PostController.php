@@ -8,9 +8,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PostRequest;
 use App\Models\Category;
 use App\Models\Post;
+use App\Services\PostService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -59,24 +59,23 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(PostRequest $request, FileUpload $fileUpload, SyncTags $syncTags)
+    public function store(PostRequest $request, PostService $postService)
     {
-        $clean = $request->validated();
-        $tagsInput = $clean['tags'] ?? null;
-        unset($clean['tags']);
+        $data = $request->validated();
+        $tagsInput = $data['tags'] ?? null;
+        unset($data['tags']);
 
-        $cover_image_path = $fileUpload->handle('cover_image', 'covers');
+        $data['status'] = $request->has('status') ? 'published' : 'draft';
+        $data['user_id'] = $request->user()->id;
 
-        DB::transaction(function () use ($clean, $request, $cover_image_path, $tagsInput, $syncTags) {
-            $post = Post::create(array_merge($clean, [
-                'status'      => $request->has('status') ? 'published' : 'draft',
-                'cover_image' => $cover_image_path,
-            ]));
+        try {
+            $postService->create($data, $tagsInput);
+        } catch (\RuntimeException $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', $e->getMessage());
+        }
 
-            $syncTags->handle($post, $tagsInput);
-        });
-
-        // PRG: POST Redirect GET
         return redirect()->route('posts.index');
     }
 
