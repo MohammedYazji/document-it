@@ -15,17 +15,12 @@ use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:sanctum')->only(['store', 'update', 'destroy']);
-    }
-
     public function index()
     {
         return Post::published()
         ->with(
             'category:id,name',
-            'user:id,name,username,avatoar'
+            'user:id,name,username,avatar'
         )->paginate();
 
         return PostResource::collection($posts);
@@ -63,7 +58,7 @@ class PostController extends Controller
 
         return $post->load(
             'category:id,name',
-            'user:id,name,username,avatoar'
+            'user:id,name,username,avatar'
         );
 
         return new PostJsonApiResource($post);

@@ -43,10 +43,24 @@ class UserSeeder extends Seeder
 
         DB::table('users')->insert([
             'name' => 'Ali Waked',
-            'email' => 'user2@gmail.com',
+            'email' => 'admin@gmail.com',
             'email_verified_at' => now(),
             'password' => Hash::make('password'),
             'username' => 'Ali',
+            'type' => 'admin',
+            'timezone' => 'Asia/Gaza',
+            'status' => 'active',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::table('users')->insert([
+            'name' => 'Mahmoud Waked',
+            'email' => 'super-admin@gmail.com',
+            'email_verified_at' => now(),
+            'password' => Hash::make('password'),
+            'username' => 'mahmoud',
+            'type' => 'super-admin',
             'timezone' => 'Asia/Gaza',
             'status' => 'active',
             'created_at' => now(),
