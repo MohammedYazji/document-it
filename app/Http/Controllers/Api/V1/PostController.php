@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\V1;
 use App\Enums\PostStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PostRequest;
+use App\Http\Resources\PostJsonApiResource;
+use App\Http\Resources\PostResource;
 use App\Models\Post;
 use App\Services\PostService;
 use Illuminate\Http\JsonResponse;
@@ -25,6 +27,8 @@ class PostController extends Controller
             'category:id,name',
             'user:id,name,username,avatoar'
         )->paginate();
+
+        return PostResource::collection($posts);
     }
 
     public function store(PostRequest $request, PostService $postService): JsonResponse
@@ -61,6 +65,8 @@ class PostController extends Controller
             'category:id,name',
             'user:id,name,username,avatoar'
         );
+
+        return new PostJsonApiResource($post);
     }
 
     public function update(Request $request, string $id)
