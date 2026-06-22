@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Post;
 use App\Observers\CategoryObserver;
 use App\Observers\PostObserver;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
@@ -37,5 +38,7 @@ class AppServiceProvider extends ServiceProvider
 
         Post::observe(PostObserver::class);
         Category::observe(CategoryObserver::class);
+
+        JsonResource::withoutWrapping();
     }
 }

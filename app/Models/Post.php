@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use App\Enums\PostStatus;
+use App\Http\Resources\PostResource;
 use App\Models\Scopes\OwnerScope;
+use App\Observers\PostObserver;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Builder;
@@ -16,6 +18,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 #[ScopedBy(OwnerScope::class)]
+#[ObserverBy(PostObserver::class)]
+#[UserResource(PostResource::class)]
 class Post extends Model
 {
     use SoftDeletes;
@@ -40,6 +44,12 @@ class Post extends Model
         'views',
         'published_at',
         'meta',
+    ];
+
+    protected $appends = [
+        'thumbnail_url',
+        'publish_time',
+        'read_time'
     ];
 
     protected function casts(): array
