@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\EnsureUserType;
+use App\Http\Middleware\UpdateUserLastActivityTime;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -14,7 +16,11 @@ return Application::configure(basePath: dirname(__DIR__))
         apiPrefix: 'api/v1',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->alias([
+            'user.type' => EnsureUserType::class,
+        ])->web([
+            UpdateUserLastActivityTime::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

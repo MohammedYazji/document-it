@@ -3,6 +3,7 @@
 use App\Http\Controllers\Dashboard\CategoryController;
 use App\Http\Controllers\Dashboard\NotificationController;
 use App\Http\Controllers\Dashboard\PostController;
+use App\Http\Controllers\Dashboard\UserController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
@@ -19,23 +20,32 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('follow', [FollowController::class, 'store'])->name('follow.store');
     Route::delete('follow', [FollowController::class, 'destroy'])->name('follow.destroy');
 
-    // Notifications
-    Route::prefix('dashboard/notifications')->name('notifications.')->group(function () {
-        Route::get('/', [NotificationController::class, 'index'])->name('index');
-        Route::patch('/{id}/read', [NotificationController::class, 'read'])->name('read');
-        Route::patch('/{id}/unread', [NotificationController::class, 'unread'])->name('unread');
-        Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('destroy');
+    // Dashboard (admin & super-admin only)
+    Route::middleware('user.type:admin,super-admin')->prefix('dashboard')->group(function () {
+
+        // User management (super-admin only)
+        Route::middleware('user.type:super-admin')->prefix('admin')->group(function () {
+            Route::get('/users', [UserController::class, 'index'])->name('admin.users');
+        });
+
+        // Notifications
+        Route::prefix('notifications')->name('notifications.')->group(function () {
+            Route::get('/', [NotificationController::class, 'index'])->name('index');
+            Route::patch('/{id}/read', [NotificationController::class, 'read'])->name('read');
+            Route::patch('/{id}/unread', [NotificationController::class, 'unread'])->name('unread');
+            Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('destroy');
+        });
+
+        // Posts
+        Route::patch('posts/{post}/restore', [PostController::class, 'restore'])->name('posts.restore');
+        Route::delete('posts/{post}/force-delete', [PostController::class, 'forceDelete'])->name('posts.forceDelete');
+        Route::resource('posts', PostController::class)->names([
+            'index', 'create', 'store', 'show', 'edit', 'update', 'destroy',
+        ]);
+
+        // Categories
+        Route::resource('categories', CategoryController::class)->names([
+            'index', 'create', 'store', 'edit', 'update', 'destroy',
+        ]);
     });
-
-    // Post management
-    Route::patch('dashboard/posts/{post}/restore', [PostController::class, 'restore'])->name('posts.restore');
-    Route::delete('dashboard/posts/{post}/force-delete', [PostController::class, 'forceDelete'])->name('posts.forceDelete');
-    Route::resource('dashboard/posts', PostController::class)->names([
-        'index', 'create', 'store', 'show', 'edit', 'update', 'destroy',
-    ]);
-
-    // Category management
-    Route::resource('dashboard/categories', CategoryController::class)->names([
-        'index', 'create', 'store', 'edit', 'update', 'destroy',
-    ]);
 });

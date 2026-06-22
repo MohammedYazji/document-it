@@ -7,4 +7,10 @@ use Illuminate\Support\Facades\Route;
 Route::post('login', [AccessTokenController::class, 'store'])->name('login');
 Route::post('logout', [AccessTokenController::class, 'destroy'])->middleware('auth:sanctum')->name('logout');
 
-Route::apiResource('posts', PostController::class);
+Route::get('posts', [PostController::class, 'index']);
+Route::get('posts/{post}', [PostController::class, 'show']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('posts', [PostController::class, 'store']);
+    Route::match(['put', 'patch'], 'posts/{post}', [PostController::class, 'update']);
+    Route::delete('posts/{post}', [PostController::class, 'destroy']);
+});
