@@ -5,8 +5,10 @@ namespace App\Providers;
 use App\Listeners\IncrementPostViews;
 use App\Models\Category;
 use App\Models\Post;
+use App\Models\User;
 use App\Observers\CategoryObserver;
 use App\Observers\PostObserver;
+use App\Policies\UserPolicy;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Event;
@@ -42,6 +44,7 @@ class AppServiceProvider extends ServiceProvider
 
         JsonResource::withoutWrapping();
 
+        Gate::policy(User::class, UserPolicy::class);
 
         // so instead of write multiple lines of permissions so will use ...
         // Gate::define('users.index', function ($user) : bool
@@ -60,6 +63,14 @@ class AppServiceProvider extends ServiceProvider
         // {
         //     return false;
         // });
+
+        // to make the super-admin jump over the permissions check so will jump over it and has all abilities no worry
+        Gate::before(function ($user, $ability) {
+            if ($user->type === 'super-admin')
+            {
+                    return True;
+            }
+        });
 
         foreach (config('abilities') as $ability => $label) {
             Gate::define("users.{$ability}", function ($user) use ($ability) {
