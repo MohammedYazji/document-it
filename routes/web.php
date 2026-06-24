@@ -24,8 +24,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('user.type:admin,super-admin')->prefix('dashboard')->group(function () {
 
         // User management (super-admin only)
-        Route::middleware('user.type:super-admin')->prefix('admin')->group(function () {
-            Route::get('/users', [UserController::class, 'index'])->name('admin.users');
+        Route::middleware('user.type:super-admin')->prefix('admin')->name('admin.')->group(function () {
+            Route::resource('users', UserController::class);
         });
 
         // Notifications
