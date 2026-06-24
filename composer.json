@@ -13,6 +13,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "laravel/ai": "*",
         "laravel/fortify": "*",
         "laravel/framework": "^13.0",
         "laravel/sanctum": "^4.0",
