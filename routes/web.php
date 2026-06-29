@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\Dashboard\AiWriteController;
 use App\Http\Controllers\Dashboard\CategoryController;
 use App\Http\Controllers\Dashboard\NotificationController;
@@ -20,6 +21,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Follow / Unfollow
     Route::post('follow', [FollowController::class, 'store'])->name('follow.store');
     Route::delete('follow', [FollowController::class, 'destroy'])->name('follow.destroy');
+
+    // Bookmarks
+    Route::post('bookmarks', [BookmarkController::class, 'store'])->name('bookmarks.store');
+    Route::delete('bookmarks', [BookmarkController::class, 'destroy'])->name('bookmarks.destroy');
 
     // Dashboard (admin & super-admin only)
     Route::middleware('user.type:admin,super-admin')->prefix('dashboard')->group(function () {

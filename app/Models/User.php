@@ -48,6 +48,11 @@ class User extends Authenticatable
         return $this->belongsToMany(User::class,'followers','follower_id', 'user_id')->with(['id', 'created_at']);
     }
 
+    public function bookmarks(): BelongsToMany
+    {
+        return $this->belongsToMany(Post::class, 'bookmarks')->withTimestamps();
+    }
+
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Role::class);
