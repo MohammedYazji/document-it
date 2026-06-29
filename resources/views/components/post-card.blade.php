@@ -26,6 +26,9 @@
       <p class="font-ui-label text-ui-label text-on-surface font-medium">{{ $post->user->name }}</p>
       <span class="text-secondary text-metadata">•</span>
       <span class="text-secondary font-metadata text-metadata">Author</span>
+      <span class="ml-auto">
+        <x-post-bookmark :post="$post" />
+      </span>
     </div>
   </div>
 </article>

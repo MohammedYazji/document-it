@@ -38,6 +38,7 @@
                     <p class="font-ui-label text-ui-label font-bold text-on-surface">{{ $post->user->name }}</p>
                     <p class="font-metadata text-metadata text-secondary">Author</p>
                 </div>
+                <x-post-bookmark :post="$post" />
             </div>
         </header>
 
