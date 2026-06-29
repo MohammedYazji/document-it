@@ -232,6 +232,15 @@
                     </div>
                 </section>
 
+                <!-- AI Write -->
+                <section>
+                    <button type="button" id="ai"
+                        class="w-full bg-primary text-white py-3 px-4 rounded-full font-ui-label text-ui-label uppercase tracking-wider hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined">auto_awesome</span>
+                        Write with AI
+                    </button>
+                </section>
+
                 <!-- Visibility / Status Toggle -->
                 <section class="pt-4 border-t border-outline-variant">
                     <label class="flex items-center justify-between cursor-pointer group">
@@ -266,13 +275,38 @@
 </form>
 
 <script>
-    tinymce.init({
-        selector: '#content',
-        plugins: [
-            'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'link', 'lists', 'media',
-            'searchreplace', 'table', 'visualblocks', 'wordcount',
-            'advlist', 'code', 'fullscreen', 'help', 'image', 'preview',
-        ],
-        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | align lineheight | numlist bullist indent outdent | link image media table | emoticons charmap | removeformat code fullscreen help',
+    const btn = document.getElementById('ai');
+    const content = document.getElementById('content');
+
+    btn.addEventListener('click', function name(event) {
+        event.preventDefault();
+        let message = window.prompt('Describe your post idea:');
+        if (message) {
+            const evtSource = new EventSource("{{ route('posts.ai') }}?message=" + encodeURIComponent(message));
+            evtSource.onmessage = function (event) {
+                if (event.data === '[DONE]') {
+                    evtSource.close();
+                    return;
+                }
+                try {
+                    let data = JSON.parse(event.data);
+                    if (data?.delta) {
+                        content.value = content.value + data.delta;
+                    }
+                    if (data?.error) {
+                        console.error("AI Write error:", data.error);
+                        alert("AI Write failed: " + data.error);
+                        evtSource.close();
+                    }
+                } catch (e) {
+                    console.error("JSON parse error", e);
+                }
+            };
+            evtSource.onerror = function (event) {
+                if (evtSource.readyState === EventSource.CLOSED) return;
+                console.error("EventSource failed.");
+                evtSource.close();
+            };
+        }
     });
 </script>
