@@ -9,6 +9,8 @@ use App\Models\Post;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Laravel\Ai\Enums\Lab;
+use Laravel\Ai\Image;
 use RuntimeException;
 
 class PostService
@@ -51,6 +53,25 @@ class PostService
                         ]);
                     } catch (\Throwable $e) {
                         Log::warning('SEO metadata generation failed', [
+                            'post_id' => $post->id,
+                            'error' => $e->getMessage(),
+                        ]);
+                    }
+                }
+
+                // if i save the post then there's no image so generate it using AI
+                // TODO: make all ai api calls as jobs in background
+                if (! $coverImagePath) {
+                    try {
+                        $response = Image::of("Create a cover image for an article/post titled: {$post->title}. The aspect ratio should be 19:9 with min width 1024px.")
+                            ->generate(provider: Lab::Gemini, model: 'gemini-2.5-flash-image');
+
+                        $generatedPath = $response->storePublicly('covers', 'public');
+
+                        $post->updateQuietly(['cover_image' => $generatedPath]);
+                        
+                    } catch (\Throwable $e) {
+                        Log::warning('Cover image generation failed', [
                             'post_id' => $post->id,
                             'error' => $e->getMessage(),
                         ]);
