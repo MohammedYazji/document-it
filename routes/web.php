@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Dashboard\AiWriteController;
 use App\Http\Controllers\Dashboard\CategoryController;
 use App\Http\Controllers\Dashboard\NotificationController;
 use App\Http\Controllers\Dashboard\PostController;
@@ -35,6 +36,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::patch('/{id}/unread', [NotificationController::class, 'unread'])->name('unread');
             Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('destroy');
         });
+
+        // AI Write (must be before resource route to avoid matching {post})
+        Route::get('posts/ai', AiWriteController::class)->name('posts.ai');
 
         // Posts
         Route::patch('posts/{post}/restore', [PostController::class, 'restore'])->name('posts.restore');
