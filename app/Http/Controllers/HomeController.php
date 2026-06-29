@@ -19,6 +19,8 @@ class HomeController extends Controller
 
         event('posts.view', $post);
 
-        return view('posts.show', compact('post'));
+        $relatedPosts = $post->related(sameCategory: true);
+
+        return view('posts.show', compact('post', 'relatedPosts'));
     }
 }

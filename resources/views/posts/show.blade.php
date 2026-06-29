@@ -48,5 +48,16 @@
         <article class="prose prose-lg max-w-none text-on-surface font-body-md">
             {!! $post->content !!}
         </article>
+
+        @if ($relatedPosts->isNotEmpty())
+            <section class="space-y-6">
+                <h2 class="font-display-md text-2xl text-on-surface">Related Posts</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    @foreach ($relatedPosts as $related)
+                        <x-post-card :post="$related" />
+                    @endforeach
+                </div>
+            </section>
+        @endif
     </main>
 </x-layout>
