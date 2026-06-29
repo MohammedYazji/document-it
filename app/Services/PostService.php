@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Ai\Enums\Lab;
+use Laravel\Ai\Embeddings;
 use Laravel\Ai\Image;
 use RuntimeException;
 
@@ -69,7 +70,11 @@ class PostService
                         $generatedPath = $response->storePublicly('covers', 'public');
 
                         $post->updateQuietly(['cover_image' => $generatedPath]);
-                        
+
+                        $response = Embeddings::for([$post->content])
+                            ->generate(provider: Lab::Gemini, model: 'gemini-embedding-001');
+
+                        $post->updateQuietly(['embedding' => $response->embeddings[0]]);
                     } catch (\Throwable $e) {
                         Log::warning('Cover image generation failed', [
                             'post_id' => $post->id,
@@ -77,6 +82,8 @@ class PostService
                         ]);
                     }
                 }
+
+
 
                 return $post;
             });

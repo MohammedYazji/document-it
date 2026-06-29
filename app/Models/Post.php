@@ -10,11 +10,13 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 #[ScopedBy(OwnerScope::class)]
@@ -44,6 +46,7 @@ class Post extends Model
         'views',
         'published_at',
         'meta',
+        'embedding',
     ];
 
     protected $appends = [
@@ -58,12 +61,23 @@ class Post extends Model
             'published_at' => 'datetime',
             'meta' => 'json',
             'status' => PostStatus::class,
+            'embedding' => 'array'
         ];
     }
 
     protected static function booted()
     {
-        //static::addGlobalScope('owner', new OwnerScope);
+        Builder::macro('selectVectorDistance', function (string $column, array $vector, string $alias) {
+            return $this->selectRaw('*, VECTOR_DISTANCE(?, CAST(? AS VECTOR)) AS '.$alias, [$column, json_encode($vector)]);
+        });
+
+        Builder::macro('whereVectorSimilarTo', function (string $column, array $vector, float $threshold) {
+            return $this->having('distance', '<', $threshold);
+        });
+
+        Builder::macro('orderByVectorDistance', function (string $column, array $vector) {
+            return $this->orderBy('distance');
+        });
     }
 
     public function scopePublished(Builder $builder, string|\DateTime|null $time = null)
@@ -156,6 +170,32 @@ class Post extends Model
         return Attribute::make(
             get: fn() => (int) ceil($this->wordCount() / 200)
         )->shouldCache();
+    }
+
+    public function related(int $limit = 3, bool $sameCategory = false): Collection
+    {
+        if (! $this->embedding) {
+            return $this->legacyRelated($limit, $sameCategory);
+        }
+
+        return static::query()
+            ->when($sameCategory && $this->category_id, fn ($q) => $q->where('category_id', $this->category_id))
+            ->selectVectorDistance('embedding', $this->embedding, 'distance')
+            ->whereVectorSimilarTo('embedding', $this->embedding, 0.4)
+            ->orderByVectorDistance('embedding', $this->embedding)
+            ->limit($limit)
+            ->get();
+    }
+
+    protected function legacyRelated(int $limit, bool $sameCategory): Collection
+    {
+        return static::query()
+            ->when($sameCategory && $this->category_id, fn ($q) => $q->where('category_id', $this->category_id))
+            ->whereHas('tags', function ($query) {
+                $query->whereIn('id', $this->tags()->pluck('id')->toArray());
+            })
+            ->limit($limit)
+            ->get();
     }
 
     public function prunable(): Builder
