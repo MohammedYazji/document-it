@@ -6,12 +6,11 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\Component;
-use Request;
 
 class UserMenu extends Component
 {
-
     public $user;
+
     /**
      * Create a new component instance.
      */

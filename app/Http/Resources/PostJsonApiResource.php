@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\JsonApi\JsonApiResource;
 
 class PostJsonApiResource extends JsonApiResource
@@ -19,7 +18,7 @@ class PostJsonApiResource extends JsonApiResource
         'title',
         'content',
         'thumbnail_url',
-        'published_at'
+        'published_at',
     ];
 
     /**

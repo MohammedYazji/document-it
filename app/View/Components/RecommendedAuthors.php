@@ -10,7 +10,7 @@ class RecommendedAuthors extends Component
 {
     public array $authors;
 
-    public function __construct(public string $title = "Recommended Authors", public int $count = 4)
+    public function __construct(public string $title = 'Recommended Authors', public int $count = 4)
     {
         $user = Auth::user();
 

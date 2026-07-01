@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::table('posts', function (Blueprint $table) {
             $table
-            ->json('embedding')
-            ->after('status')
-            ->nullable();
+                ->json('embedding')
+                ->after('status')
+                ->nullable();
         });
     }
 

@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -13,7 +12,7 @@ class PostSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table("categories")
+        DB::table('categories')
             ->insert([
                 'name' => 'General',
                 'slug' => 'general',
@@ -23,13 +22,13 @@ class PostSeeder extends Seeder
                 'updated_at' => now(),
             ]);
 
-        $category = DB::table("categories")
+        $category = DB::table('categories')
             ->where('slug', 'general')
             ->orderBy('id', 'desc')
             ->limit(1)
             ->first();
 
-        DB::table("posts")
+        DB::table('posts')
             ->insert([
                 'user_id' => 1,
                 'title' => 'My First Post',

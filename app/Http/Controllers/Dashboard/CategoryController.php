@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
-use App\Models\Category;
 use App\Http\Requests\CategoryRequest;
+use App\Models\Category;
 use Illuminate\Support\Str;
 
 class CategoryController extends Controller
@@ -31,8 +31,8 @@ class CategoryController extends Controller
         $parents = Category::whereNull('parent_id')->latest()->get();
 
         return view('dashboard.categories.create', [
-            'category' => new Category(),
-            'parents'  => $parents,
+            'category' => new Category,
+            'parents' => $parents,
         ]);
     }
 
@@ -67,7 +67,7 @@ class CategoryController extends Controller
 
         return view('dashboard.categories.edit', [
             'category' => $category,
-            'parents'  => $parents,
+            'parents' => $parents,
         ]);
     }
 

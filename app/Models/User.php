@@ -16,9 +16,10 @@ use Laravel\Sanctum\HasApiTokens;
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
+    use HasApiTokens;
+
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
-    use HasApiTokens;
 
     /**
      * Get the attributes that should be cast.
@@ -40,12 +41,12 @@ class User extends Authenticatable
 
     public function followers(): BelongsToMany
     {
-        return $this->belongsToMany(User::class,'followers','user_id', 'follower_id')->with(['id', 'created_at']);
+        return $this->belongsToMany(User::class, 'followers', 'user_id', 'follower_id')->with(['id', 'created_at']);
     }
 
-        public function followings(): BelongsToMany
+    public function followings(): BelongsToMany
     {
-        return $this->belongsToMany(User::class,'followers','follower_id', 'user_id')->with(['id', 'created_at']);
+        return $this->belongsToMany(User::class, 'followers', 'follower_id', 'user_id')->with(['id', 'created_at']);
     }
 
     public function bookmarks(): BelongsToMany

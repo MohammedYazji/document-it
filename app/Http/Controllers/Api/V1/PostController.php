@@ -18,10 +18,10 @@ class PostController extends Controller
     public function index()
     {
         return Post::published()
-        ->with(
-            'category:id,name',
-            'user:id,name,username,avatar'
-        )->paginate();
+            ->with(
+                'category:id,name',
+                'user:id,name,username,avatar'
+            )->paginate();
 
         return PostResource::collection($posts);
     }
@@ -44,7 +44,7 @@ class PostController extends Controller
         try {
             $post = $postService->create($data, $tagsInput);
         } catch (\RuntimeException $e) {
-            return response()->json(['status' => 'error', 'message' => 'Failed to create post: ' .  $e->getMessage()], 500);
+            return response()->json(['status' => 'error', 'message' => 'Failed to create post: '.$e->getMessage()], 500);
         }
 
         return response()->json($post, 201);

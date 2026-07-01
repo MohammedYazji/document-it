@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dashboard;
 use App\Ai\Agents\WriterAgent;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Laravel\Ai\Streaming\Events\TextDelta;
 
 class AiWriteController extends Controller
 {
@@ -19,14 +20,14 @@ class AiWriteController extends Controller
                 );
 
                 foreach ($response as $event) {
-                    if ($event instanceof \Laravel\Ai\Streaming\Events\TextDelta) {
-                        echo "data: " . json_encode(['delta' => $event->delta]) . "\n\n";
+                    if ($event instanceof TextDelta) {
+                        echo 'data: '.json_encode(['delta' => $event->delta])."\n\n";
                         @ob_flush();
                         flush();
                     }
                 }
             } catch (\Throwable $e) {
-                echo "data: " . json_encode(['error' => $e->getMessage()]) . "\n\n";
+                echo 'data: '.json_encode(['error' => $e->getMessage()])."\n\n";
                 @ob_flush();
                 flush();
             }

@@ -2,11 +2,13 @@
 
 namespace Database\Factories;
 
+use App\Models\Post;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
- * @extends Factory<\App\Models\Post>
+ * @extends Factory<Post>
  */
 class PostFactory extends Factory
 {
@@ -18,7 +20,7 @@ class PostFactory extends Factory
             'user_id' => User::factory(),
             'title' => $title,
             'content' => fake()->paragraphs(3, true),
-            'slug' => \Illuminate\Support\Str::slug($title) . '-' . fake()->unique()->numberBetween(1, 99999),
+            'slug' => Str::slug($title).'-'.fake()->unique()->numberBetween(1, 99999),
             'excerpt' => fake()->sentence(),
             'status' => 'draft',
             'views' => 0,

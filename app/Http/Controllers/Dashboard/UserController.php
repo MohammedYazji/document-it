@@ -7,8 +7,6 @@ use App\Models\Role;
 use App\Models\User;
 use Hash;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
@@ -79,8 +77,8 @@ class UserController extends Controller
 
         $data = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'username' => 'required|string|unique:users,username,' . $user->id,
+            'email' => 'required|email|unique:users,email,'.$user->id,
+            'username' => 'required|string|unique:users,username,'.$user->id,
             'type' => ['required', Rule::in(['user', 'admin', 'super-admin'])],
             'roles' => 'nullable|array',
             'roles.*' => 'exists:roles,id',

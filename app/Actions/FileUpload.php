@@ -11,6 +11,7 @@ class FileUpload
     {
         //
     }
+
     public function handle(string $key, string $path, string $disk = 'public')
     {
         if (request()->hasFile($key)) {

@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\Restricted;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class PostRequest extends FormRequest
@@ -17,19 +19,19 @@ class PostRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
             'title' => 'required|string|max:255|min:3',
-            'content' => ['nullable', 'string', 'max:999999', new \App\Rules\Restricted(['spam', 'scam', 'hack'])],
+            'content' => ['nullable', 'string', 'max:999999', new Restricted(['spam', 'scam', 'hack'])],
             'cover_image' => 'nullable|image|mimetypes:image/*|dimensions:min_width=400,min_height=400,max_width=2000,max_height=2000',
             'category_id' => 'nullable|exists:categories,id',
             'status' => 'nullable|in:published,draft',
             'tags' => 'nullable|string|max:1000',
             'published_at' => 'nullable|date',
-            'meta'=> 'nullable|array',
+            'meta' => 'nullable|array',
             'meta.title' => 'nullable|string|max:255',
             'meta.description' => 'nullable|string|max:500',
             'meta.keywords' => 'nullable|string|max:255',
@@ -43,7 +45,7 @@ class PostRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'required'       => ':attribute is required',
+            'required' => ':attribute is required',
             'title.required' => 'The Post Title is a must!!',
         ];
     }
@@ -54,11 +56,11 @@ class PostRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'title'       => 'post title',
-            'content'     => 'post content',
+            'title' => 'post title',
+            'content' => 'post content',
             'cover_image' => 'cover image',
             'category_id' => 'category',
-            'tags'        => 'tags',
+            'tags' => 'tags',
         ];
     }
 }

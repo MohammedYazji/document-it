@@ -9,7 +9,6 @@ use Illuminate\Notifications\Notification;
 
 class FollowNotification extends Notification
 {
-
     public function __construct(protected User $follower)
     {
         //
@@ -23,7 +22,7 @@ class FollowNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject("New Follower")
+            ->subject('New Follower')
             ->greeting("Hi {$notifiable->name},")
             ->line("{$this->follower->name} started following you on Document It.")
             ->action('View Profile', route('users.profile', $this->follower->username))
@@ -36,10 +35,10 @@ class FollowNotification extends Notification
     {
         return [
             'title' => 'New Follower',
-            'body'  => "{$this->follower->name} started following you.",
-            'link'  => route('users.profile', $this->follower->username),
-            'meta'  => [
-                'follower_id'     => $this->follower->id,
+            'body' => "{$this->follower->name} started following you.",
+            'link' => route('users.profile', $this->follower->username),
+            'meta' => [
+                'follower_id' => $this->follower->id,
                 'follower_avatar' => $this->follower->avatar,
             ],
         ];
@@ -49,10 +48,10 @@ class FollowNotification extends Notification
     {
         return new BroadcastMessage([
             'title' => 'New Follower',
-            'body'  => "{$this->follower->name} started following you.",
-            'link'  => route('users.profile', $this->follower->username),
-            'meta'  => [
-                'follower_id'     => $this->follower->id,
+            'body' => "{$this->follower->name} started following you.",
+            'link' => route('users.profile', $this->follower->username),
+            'meta' => [
+                'follower_id' => $this->follower->id,
                 'follower_avatar' => $this->follower->avatar,
             ],
         ]);

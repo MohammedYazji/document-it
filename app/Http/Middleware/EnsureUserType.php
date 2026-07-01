@@ -15,7 +15,7 @@ class EnsureUserType
      */
     public function handle(Request $request, Closure $next, string ...$types): Response
     {
-        if (!in_array($request->user()?->type, $types)) {
+        if (! in_array($request->user()?->type, $types)) {
             abort(403);
         }
 

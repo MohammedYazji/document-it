@@ -16,18 +16,18 @@ class IncrementPostViews
             $post = $post[0];
         }
 
-        if (!($post instanceof Post)) {
+        if (! ($post instanceof Post)) {
             return;
         }
 
         $cookie = Cookie::get('post-views');
         $viewed = $cookie ? unserialize($cookie) : [];
 
-        if (!is_array($viewed)) {
+        if (! is_array($viewed)) {
             $viewed = [];
         }
 
-        if (!in_array($post->id, $viewed)) {
+        if (! in_array($post->id, $viewed)) {
             $post->increment('views');
             $viewed[] = $post->id;
 
