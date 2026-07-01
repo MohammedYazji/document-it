@@ -4,14 +4,13 @@ namespace App\Enums;
 
 enum PostStatus: string
 {
-    case Draft = "draft";
-    case Published = "published";
-    case Archived = "archived";
+    case Draft = 'draft';
+    case Published = 'published';
+    case Archived = 'archived';
 
     public function getLabel(): string
     {
-        return match ($this)
-        {
+        return match ($this) {
             self::Draft => 'Draft',
             self::Published => 'Published',
             self::Archived => 'Archived',
@@ -20,8 +19,7 @@ enum PostStatus: string
 
     public function getColor(): string
     {
-        return match ($this)
-        {
+        return match ($this) {
             self::Draft => 'yellow',
             self::Published => 'green',
             self::Archived => 'gray',

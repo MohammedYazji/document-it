@@ -24,7 +24,7 @@ class FollowController extends Controller
 
         if (! $alreadyFollowing) {
             $follower->followings()->attach($user_id, [
-                'id'         => Str::uuid(),
+                'id' => Str::uuid(),
                 'created_at' => now(),
             ]);
 

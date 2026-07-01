@@ -22,8 +22,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind("APP_CONFIG", function () {
-            return config('app'); //file name then key name // if just app we return all keys
+        $this->app->bind('APP_CONFIG', function () {
+            return config('app'); // file name then key name // if just app we return all keys
         });
     }
 
@@ -66,9 +66,8 @@ class AppServiceProvider extends ServiceProvider
 
         // to make the super-admin jump over the permissions check so will jump over it and has all abilities no worry
         Gate::before(function ($user, $ability) {
-            if ($user->type === 'super-admin')
-            {
-                    return True;
+            if ($user->type === 'super-admin') {
+                return true;
             }
         });
 

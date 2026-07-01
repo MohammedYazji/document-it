@@ -51,7 +51,7 @@ class PostController extends Controller
     public function create()
     {
         return view('dashboard.posts.create', [
-            'post'       => new Post(),
+            'post' => new Post,
             'categories' => Category::orderBy('name')->get(),
         ]);
     }
@@ -103,7 +103,7 @@ class PostController extends Controller
         $post = Post::with('tags')->findOrFail($id);
 
         return view('dashboard.posts.edit', [
-            'post'       => $post,
+            'post' => $post,
             'categories' => Category::orderBy('name')->get(),
         ]);
     }
@@ -116,7 +116,7 @@ class PostController extends Controller
         $post = Post::findOrFail($id);
 
         $data = [
-            'slug'   => Str::slug($request->post('title')),
+            'slug' => Str::slug($request->post('title')),
             'status' => $request->has('status') ? 'published' : 'draft',
         ];
 

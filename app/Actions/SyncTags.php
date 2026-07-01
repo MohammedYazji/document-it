@@ -12,11 +12,12 @@ class SyncTags
     {
         if ($tags === null || trim($tags) === '') {
             $post->tags()->detach();
+
             return;
         }
 
         $tagIds = collect(explode(',', $tags))
-            ->map(fn($name) => trim($name))
+            ->map(fn ($name) => trim($name))
             ->filter()
             ->map(function (string $name) {
                 return Tag::firstOrCreate([

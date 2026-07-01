@@ -51,9 +51,9 @@ return [
             'driver' => 'local',
             'root' => public_path('uploads'), // will be nested in public folder
             'url' => rtrim(env('APP_URL', 'http://document-it.test'), '/').'/uploads',
-            'visibility'=> 'public',
+            'visibility' => 'public',
             'throw' => false,
-            'report'=> false,
+            'report' => false,
         ],
 
         's3' => [

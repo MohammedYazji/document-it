@@ -6,7 +6,6 @@ use App\Enums\PostStatus;
 use App\Http\Resources\PostResource;
 use App\Models\Scopes\OwnerScope;
 use App\Observers\PostObserver;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -17,8 +16,6 @@ use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 #[ScopedBy(OwnerScope::class)]
@@ -27,14 +24,19 @@ use Illuminate\Support\Facades\Storage;
 class Post extends Model
 {
     use HasFactory;
-    use SoftDeletes;
     use Prunable;
+    use SoftDeletes;
 
     protected $connection = 'mysql';
+
     protected $table = 'posts';
+
     protected $primaryKey = 'id';
+
     public $incrementing = true;
+
     protected $keyType = 'int';
+
     public $timestamps = true;
 
     protected $fillable = [
@@ -55,7 +57,7 @@ class Post extends Model
     protected $appends = [
         'thumbnail_url',
         'publish_time',
-        'read_time'
+        'read_time',
     ];
 
     protected function casts(): array
@@ -64,7 +66,7 @@ class Post extends Model
             'published_at' => 'datetime',
             'meta' => 'json',
             'status' => PostStatus::class,
-            'embedding' => 'array'
+            'embedding' => 'array',
         ];
     }
 
@@ -86,7 +88,7 @@ class Post extends Model
     public function scopePublished(Builder $builder, string|\DateTime|null $time = null)
     {
         $builder
-            //->withoutGlobalScope('owner')
+            // ->withoutGlobalScope('owner')
             ->where('status', PostStatus::Published)
             ->where(function ($query) use ($time) {
                 $query->whereNull('published_at')
@@ -138,15 +140,15 @@ class Post extends Model
     public function content(): Attribute
     {
         return new Attribute(
-            set: fn($value) => strip_tags($value, '<h2><h3><h4><h5><h6><p><a><ul><ol><li><br><strong><em><img><video><audio>'),
+            set: fn ($value) => strip_tags($value, '<h2><h3><h4><h5><h6><p><a><ul><ol><li><br><strong><em><img><video><audio>'),
         );
     }
 
     public function title(): Attribute
     {
         return new Attribute(
-            get: fn($value) => ucwords($value),
-            set: fn($value) => strip_tags($value),
+            get: fn ($value) => ucwords($value),
+            set: fn ($value) => strip_tags($value),
         );
     }
 
@@ -155,7 +157,7 @@ class Post extends Model
         return new Attribute(
             get: function () {
                 return $this->cover_image
-                    ? asset('storage/' . $this->cover_image)
+                    ? asset('storage/'.$this->cover_image)
                     : asset('images/default-thumbnail.png');
             }
         );
@@ -164,7 +166,7 @@ class Post extends Model
     public function publishTime(): Attribute
     {
         return new Attribute(
-            get: fn() => $this->published_at ?? $this->created_at,
+            get: fn () => $this->published_at ?? $this->created_at,
         );
     }
 
@@ -176,7 +178,7 @@ class Post extends Model
     public function readTime(): Attribute
     {
         return Attribute::make(
-            get: fn() => (int) ceil($this->wordCount() / 200)
+            get: fn () => (int) ceil($this->wordCount() / 200)
         )->shouldCache();
     }
 

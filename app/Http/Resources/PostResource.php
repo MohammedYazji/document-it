@@ -16,7 +16,7 @@ class PostResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'title'=> $this->title,
+            'title' => $this->title,
             'content' => $this->content,
             'cover_url' => $this->thumbnail_url,
             'status' => [
@@ -24,7 +24,7 @@ class PostResource extends JsonResource
                 'label' => $this->status->getLabel(),
                 'color' => $this->status->getColor(),
             ],
-            'published_at' =>$this->when($this->published_at, $this->published_at),
+            'published_at' => $this->when($this->published_at, $this->published_at),
             'category' => new CategoryResource($this->whenLoaded('category')),
             'author' => new UserResource($this->whenLoaded('user')),
         ];

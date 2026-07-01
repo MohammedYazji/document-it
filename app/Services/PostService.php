@@ -9,8 +9,9 @@ use App\Models\Post;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Laravel\Ai\Enums\Lab;
+use Illuminate\Support\Facades\Validator;
 use Laravel\Ai\Embeddings;
+use Laravel\Ai\Enums\Lab;
 use Laravel\Ai\Image;
 use RuntimeException;
 
@@ -24,17 +25,30 @@ class PostService
 
     public function create(array $data, ?string $tagsInput = null): Post
     {
+        $validated = Validator::validate($data, [
+            'title' => 'required|string|min:3|max:255',
+            'content' => 'required|string',
+            'user_id' => 'sometimes|exists:users,id',
+            'category_id' => 'nullable|exists:categories,id',
+            'status' => 'nullable|in:draft,published,archived',
+            'published_at' => 'nullable|date',
+            'meta' => 'nullable|array',
+            'meta.title' => 'nullable|string|max:255',
+            'meta.description' => 'nullable|string|max:500',
+            'meta.keywords' => 'nullable|string|max:255',
+        ]);
+
         $coverImagePath = $this->fileUpload->handle('cover_image', 'covers');
 
         try {
-            return DB::transaction(function () use ($data, $coverImagePath, $tagsInput) {
-                $post = Post::create(array_merge($data, [
+            return DB::transaction(function () use ($validated, $coverImagePath, $tagsInput) {
+                $post = Post::create(array_merge($validated, [
                     'cover_image' => $coverImagePath,
                 ]));
 
                 $this->syncTags->handle($post, $tagsInput);
 
-                $metaProvided = filled($data['meta']['title'] ?? null) || filled($data['meta']['description'] ?? null) || filled($data['meta']['keywords'] ?? null);
+                $metaProvided = filled($validated['meta']['title'] ?? null) || filled($validated['meta']['description'] ?? null) || filled($validated['meta']['keywords'] ?? null);
 
                 if (! $metaProvided) {
                     try {
@@ -83,8 +97,6 @@ class PostService
                     }
                 }
 
-
-
                 return $post;
             });
         } catch (\Throwable $e) {
@@ -94,10 +106,10 @@ class PostService
 
             Log::error('Post creation failed', [
                 'error' => $e->getMessage(),
-                'data'  => $data,
+                'data' => $validated,
             ]);
 
-            throw new RuntimeException('Failed to create post: ' . $e->getMessage());
+            throw new RuntimeException('Failed to create post: '.$e->getMessage());
         }
     }
 }
