@@ -17,7 +17,7 @@ class PostController extends Controller
 {
     public function index()
     {
-        return Post::published()
+        $posts = Post::published()
             ->with(
                 'category:id,name',
                 'user:id,name,username,avatar'
