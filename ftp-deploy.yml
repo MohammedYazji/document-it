@@ -1,0 +1,37 @@
+name: FTP Deploy
+
+# Triggers the workflow on every push to the main branch.
+# Change 'main' to your default branch name if different (e.g. 'master').
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  ftp-deploy:
+    name: Upload to FTP server
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        # Fetch full history if you rely on git-based diffing for uploads.
+        # with:
+        #   fetch-depth: 0
+
+      - name: FTP Deploy
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          # Local folder to upload (relative to repo root). "./" uploads everything.
+          local-dir: ./
+          # Remote folder on the server to upload into.
+          server-dir: /public_html/
+          # Files/folders to skip (glob patterns, one per line).
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/.github/**
