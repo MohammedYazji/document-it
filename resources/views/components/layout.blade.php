@@ -1,101 +1,113 @@
 <!DOCTYPE html>
 
-<html class="light" lang="en">
+<html class="dark" lang="en">
 
 <head>
-        <meta charset="utf-8" />
-        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-        <meta name="user-id" content="{{ auth()->id() }}">
-        @vite('resources/css/app.css')
-        <script src="https://cdn.tiny.cloud/1/pfai0o5myakjgxyslwuu2rlzkcdp782oxxhl26nuk74k3kgx/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Source+Serif+4:wght@400;600;700&amp;display=swap"
-                rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-                rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-                rel="stylesheet" />
-        {{ $style ?? '' }}
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta name="user-id" content="{{ auth()->id() }}">
+    <meta name="theme-color" content="#0d1117">
+    @vite('resources/css/app.css')
+    {{ $style ?? '' }}
 </head>
 
-<body class="font-body-md text-body-md selection:bg-primary-fixed selection:text-on-primary-fixed">
-        <!-- TopNavBar -->
-        <header class="fixed top-0 z-50 w-full bg-surface border-b border-outline-variant">
-                <div class="flex justify-between items-center w-full px-gutter max-w-container-max mx-auto h-16">
-                        <div class="flex items-center gap-8">
-                                <a class="font-display-lg-mobile text-display-lg-mobile font-bold text-on-surface"
-                                        href="{{route('home')}}">{{config('app.name')}}</a>
-                                <nav class="hidden md:flex items-center gap-6">
-                                        <a class="{{ request()->routeIs('home') ? 'text-primary font-bold border-b-2 border-primary' : 'text-on-surface-variant font-medium border-b-2 border-transparent' }} pb-1 font-ui-label text-ui-label hover:text-primary transition-colors duration-200"
-                                                href="{{ route('home') }}">Feed</a>
-                                        <a class="text-on-surface-variant font-medium border-b-2 border-transparent pb-1 font-ui-label text-ui-label hover:text-primary transition-colors duration-200"
-                                                href="#">Authors</a>
-                                        <a class="{{ request()->routeIs('posts.*') ? 'text-primary font-bold border-b-2 border-primary' : 'text-on-surface-variant font-medium border-b-2 border-transparent' }} pb-1 font-ui-label text-ui-label hover:text-primary transition-colors duration-200"
-                                                href="{{ route('posts.index') }}">Dashboard</a>
-                                        <a class="{{ request()->routeIs('categories.*') ? 'text-primary font-bold border-b-2 border-primary' : 'text-on-surface-variant font-medium border-b-2 border-transparent' }} pb-1 font-ui-label text-ui-label hover:text-primary transition-colors duration-200"
-                                                href="{{ route('categories.index') }}">Categories</a>
-                                </nav>
-                        </div>
-                        <div class="flex items-center gap-4">
-                                <div
-                                        class="hidden lg:flex items-center bg-surface-container border border-outline-variant rounded-full px-4 py-1.5 gap-2">
-                                        <span class="material-symbols-outlined text-secondary"
-                                                data-icon="search">search</span>
-                                        <input class="bg-transparent border-none focus:ring-0 text-ui-label font-ui-label w-48"
-                                                placeholder="Search..." type="text" />
-                                </div>
-                                <div class="flex items-center gap-2">
-                                        @php $unreadCount = Auth::check() ? Auth::user()->unreadNotifications()->count() : 0 @endphp
-                                        <a href="{{ route('notifications.index') }}"
-                                                class="relative p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-all inline-flex items-center">
-                                                <span class="material-symbols-outlined"
-                                                        data-icon="notifications">notifications</span>
-                                                <span data-unread-badge class="absolute -top-0.5 -right-0.5 w-4 h-4 bg-error text-white text-[10px] font-bold rounded-full flex items-center justify-center {{ $unreadCount > 0 ? '' : 'hidden' }}">{{ $unreadCount > 9 ? '9+' : $unreadCount }}</span>
-                                        </a>
-                                        <button
-                                                class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-all">
-                                                <span class="material-symbols-outlined"
-                                                        data-icon="bookmark">bookmark</span>
-                                        </button>
-                                        <x-user-menu />
-                                </div>
-                        </div>
+<body class="font-body-md text-body-md bg-background text-on-surface selection:bg-primary/30 selection:text-primary">
+    <div class="flex min-h-screen">
+
+        <!-- Sidebar -->
+        <aside class="hidden md:flex flex-col w-48 bg-surface border-r border-outline-variant fixed top-0 left-0 h-full z-40">
+            <div class="p-4 border-b border-outline-variant">
+                <a class="font-bold text-primary text-base" href="{{route('home')}}">&gt;&gt; {{config('app.name')}}</a>
+            </div>
+            <nav class="flex-1 p-3 space-y-0.5">
+                <a class="flex items-center gap-2 px-3 py-2 rounded text-sm {{ request()->routeIs('home') ? 'bg-primary/10 text-primary' : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface' }} transition-colors"
+                    href="{{ route('home') }}">
+                    $ feed
+                </a>
+                <a class="flex items-center gap-2 px-3 py-2 rounded text-sm {{ request()->routeIs('posts.*') ? 'bg-primary/10 text-primary' : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface' }} transition-colors"
+                    href="{{ route('posts.index') }}">
+                    $ dashboard
+                </a>
+                <a class="flex items-center gap-2 px-3 py-2 rounded text-sm {{ request()->routeIs('categories.*') ? 'bg-primary/10 text-primary' : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface' }} transition-colors"
+                    href="{{ route('categories.index') }}">
+                    $ categories
+                </a>
+                <a class="flex items-center gap-2 px-3 py-2 rounded text-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"
+                    href="#">
+                    $ authors
+                </a>
+                @auth
+                    <a class="flex items-center gap-2 px-3 py-2 rounded text-sm text-primary hover:bg-primary/10 transition-colors"
+                        href="{{ route('posts.create') }}">
+                        $ new post
+                    </a>
+                @endauth
+            </nav>
+            <div class="p-3 border-t border-outline-variant">
+                <x-user-menu />
+            </div>
+        </aside>
+
+        <!-- Main Area -->
+        <div class="flex-1 md:ml-48 flex flex-col">
+            <!-- Top Nav -->
+            <header class="sticky top-0 z-50 bg-surface/95 backdrop-blur-sm border-b border-outline-variant h-12">
+                <div class="flex justify-between items-center h-full px-4">
+                    <div class="flex items-center gap-4">
+                        <button id="mobile-menu-btn" class="md:hidden text-on-surface-variant hover:text-primary text-sm">[=]</button>
+                        <a href="{{ route('home') }}" class="md:hidden font-bold text-primary text-sm">&gt;&gt;</a>
+                    </div>
+                    <div class="flex items-center gap-3 text-sm">
+                        @php $unreadCount = Auth::check() ? Auth::user()->unreadNotifications()->count() : 0 @endphp
+                        <a href="{{ route('notifications.index') }}" class="text-on-surface-variant hover:text-primary transition-colors">
+                            [inbox{{ $unreadCount > 0 ? ' ' . $unreadCount : '' }}]
+                        </a>
+                        <span class="text-on-surface-variant/30">|</span>
+                        <span class="text-on-surface-variant/50">{{ date('D') }}</span>
+                    </div>
                 </div>
-        </header>
-        <!-- Main Content Layout -->
-        {{ $slot }}
-        <!-- Footer -->
-        <footer class="bg-surface border-t border-outline-variant">
-                <div
-                        class="w-full py-section-gap px-gutter max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-                        <div class="flex flex-col gap-2 items-center md:items-start">
-                                <span
-                                        class="font-headline-md text-headline-md text-on-surface">{{config('app.name')}}</span>
-                                <p class="font-metadata text-metadata text-secondary">© 2026 {{config('app.name')}}. All
-                                        rights reserved.</p>
-                        </div>
-                        <nav class="flex flex-wrap justify-center gap-8">
-                                <a class="text-secondary font-metadata text-metadata hover:text-on-surface underline transition-all"
-                                        href="#">About</a>
-                                <a class="text-secondary font-metadata text-metadata hover:text-on-surface underline transition-all"
-                                        href="#">Privacy</a>
-                                <a class="text-secondary font-metadata text-metadata hover:text-on-surface underline transition-all"
-                                        href="#">Terms</a>
-                                <a class="text-secondary font-metadata text-metadata hover:text-on-surface underline transition-all"
-                                        href="#">API</a>
-                                <a class="text-secondary font-metadata text-metadata hover:text-on-surface underline transition-all"
-                                        href="#">Help</a>
-                        </nav>
-                        <div class="flex gap-4">
-                                <button
-                                        class="p-2 text-secondary hover:text-primary transition-colors focus:outline-none ring-primary"><span
-                                                class="material-symbols-outlined">alternate_email</span></button>
-                                <button
-                                        class="p-2 text-secondary hover:text-primary transition-colors focus:outline-none ring-primary"><span
-                                                class="material-symbols-outlined">rss_feed</span></button>
-                        </div>
+            </header>
+
+            <!-- Mobile Sidebar -->
+            <div id="mobile-sidebar" class="hidden fixed inset-0 z-50 md:hidden">
+                <div class="absolute inset-0 bg-black/60" id="mobile-sidebar-close"></div>
+                <aside class="absolute left-0 top-0 h-full w-48 bg-surface border-r border-outline-variant p-3 space-y-0.5">
+                    <div class="mb-3 pb-3 border-b border-outline-variant">
+                        <a class="font-bold text-primary text-base" href="{{route('home')}}">&gt;&gt; {{config('app.name')}}</a>
+                    </div>
+                    <a class="block px-3 py-2 rounded text-sm {{ request()->routeIs('home') ? 'bg-primary/10 text-primary' : 'text-on-surface-variant hover:bg-surface-container' }}" href="{{ route('home') }}">$ feed</a>
+                    <a class="block px-3 py-2 rounded text-sm {{ request()->routeIs('posts.*') ? 'bg-primary/10 text-primary' : 'text-on-surface-variant hover:bg-surface-container' }}" href="{{ route('posts.index') }}">$ dashboard</a>
+                    <a class="block px-3 py-2 rounded text-sm {{ request()->routeIs('categories.*') ? 'bg-primary/10 text-primary' : 'text-on-surface-variant hover:bg-surface-container' }}" href="{{ route('categories.index') }}">$ categories</a>
+                    <a class="block px-3 py-2 rounded text-sm text-on-surface-variant hover:bg-surface-container" href="#">$ authors</a>
+                    @auth
+                        <a class="block px-3 py-2 rounded text-sm text-primary hover:bg-primary/10" href="{{ route('posts.create') }}">$ new post</a>
+                    @endauth
+                </aside>
+            </div>
+
+            <!-- Page Content -->
+            <main class="flex-1">
+                {{ $slot }}
+            </main>
+
+            <!-- Footer -->
+            <footer class="border-t border-outline-variant py-6 px-4">
+                <div class="max-w-container-max mx-auto flex flex-col sm:flex-row justify-between items-center gap-2 text-sm text-secondary">
+                    <span class="text-primary">{{config('app.name')}}</span>
+                    <span class="text-on-surface-variant/40">// {{date('Y')}}</span>
                 </div>
-        </footer>
-        @vite('resources/js/app.js')
+            </footer>
+        </div>
+    </div>
+
+    @vite('resources/js/app.js')
+    <script>
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const mobileSidebar = document.getElementById('mobile-sidebar');
+        const mobileClose = document.getElementById('mobile-sidebar-close');
+        if (menuBtn) menuBtn.addEventListener('click', () => mobileSidebar.classList.remove('hidden'));
+        if (mobileClose) mobileClose.addEventListener('click', () => mobileSidebar.classList.add('hidden'));
+    </script>
 </body>
 
 </html>
