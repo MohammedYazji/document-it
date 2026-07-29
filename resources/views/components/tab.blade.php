@@ -1,9 +1,9 @@
 @props(['href', 'active' => false, 'count' => null])
 
 <a href="{{ $href }}" 
-   class="pb-4 text-ui-label whitespace-nowrap transition-all duration-200 {{ $active ? 'font-bold border-b-2 border-primary text-primary' : 'font-medium text-on-surface-variant hover:text-primary' }}">
-    {{ $slot }}
+   class="whitespace-nowrap transition-colors pb-2 border-b-2 {{ $active ? 'font-bold border-primary text-primary' : 'border-transparent text-on-surface-variant hover:text-on-surface' }}">
+    $ {{ $slot }}
     @if($count !== null)
-        <span class="ml-1 opacity-80">({{ $count }})</span>
+        <span class="opacity-50">({{ $count }})</span>
     @endif
 </a>

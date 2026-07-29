@@ -1,34 +1,21 @@
 @props(['post'])
 
-<article class="flex flex-col md:flex-row gap-8 group">
-  <a href="{{ route('post.show', $post->slug) }}" class="w-full md:w-1/3 aspect-video md:aspect-square overflow-hidden rounded-lg border border-outline-variant block">
-    <img alt="{{ $post->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-      src="{{ $post->thumbnail_url }}" />
-  </a>
-  <div class="w-full md:w-2/3 space-y-3">
-    <div class="flex items-center gap-2 font-metadata text-metadata text-secondary">
-      <span class="text-primary font-bold">{{ $post->category->name }}</span>
-      <span>•</span>
-      <span>{{ $post->publish_time->format('M d, Y') }}</span>
-      <span>•</span>
-      <span class="flex items-center gap-1">
-        <span class="material-symbols-outlined text-[16px]">visibility</span>
-        {{ $post->views }}
-      </span>
+<a href="{{ route('post.show', $post->slug) }}" class="block group">
+  <article class="flex gap-4 p-4 border border-outline-variant rounded-lg bg-surface hover:border-primary transition-colors">
+    <img alt="" class="w-24 h-24 rounded object-cover opacity-80 group-hover:opacity-100 transition-opacity shrink-0" src="{{ $post->thumbnail_url }}" />
+    <div class="flex flex-col justify-between min-w-0">
+      <div class="space-y-1">
+        <div class="flex items-center gap-2 text-xs text-on-surface-variant">
+          <span class="text-primary">{{ $post->category->name }}</span>
+          <span class="text-on-surface-variant/30">|</span>
+          <span>{{ $post->publish_time->format('M d') }}</span>
+        </div>
+        <h3 class="text-on-surface font-bold text-sm group-hover:text-primary transition-colors line-clamp-2">{{ $post->title }}</h3>
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="text-xs text-on-surface-variant/60">{{ $post->user->name }}</span>
+        <span class="text-xs text-on-surface-variant/40">{{ $post->views }}v</span>
+      </div>
     </div>
-    <a href="{{ route('post.show', $post->slug) }}">
-      <h3
-        class="font-headline-md text-[24px] leading-snug text-on-surface group-hover:text-primary transition-colors">
-        {{ $post->title }}</h3>
-    </a>
-    <p class="text-on-surface-variant font-body-md text-body-md line-clamp-2">{{ $post->excerpt ?? Str::limit(strip_tags($post->content), 150) }}</p>
-    <div class="flex items-center gap-3 pt-2">
-      <p class="font-ui-label text-ui-label text-on-surface font-medium">{{ $post->user->name }}</p>
-      <span class="text-secondary text-metadata">•</span>
-      <span class="text-secondary font-metadata text-metadata">Author</span>
-      <span class="ml-auto">
-        <x-post-bookmark :post="$post" />
-      </span>
-    </div>
-  </div>
-</article>
+  </article>
+</a>
