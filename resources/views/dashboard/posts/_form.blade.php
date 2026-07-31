@@ -1,312 +1,164 @@
 <form action="{{ $action ?? route('posts.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
-    @if (($method ?? 'POST') !== 'POST')
-        @method($method)
-    @endif
+    @if (($method ?? 'POST') !== 'POST') @method($method) @endif
 
-
-    <main class="pt-24 pb-32 flex flex-col lg:flex-row max-w-container-max mx-auto px-gutter gap-12">
-        <!-- Editor Canvas -->
-        <div class="flex-1 max-w-article-max mx-auto w-full distraction-free-focus">
-            <div class="editor-container">
-                @if ($errors->any())
-                    <div class="mb-8 p-4 bg-error-container border border-error rounded-xl shadow-sm">
-                        <div class="flex items-center gap-2 mb-3">
-                            <span class="material-symbols-outlined text-error">error</span>
-                            <h3 class="text-on-error-container font-ui-label text-ui-label tracking-wider uppercase">
-                                Please fix the following errors:</h3>
-                        </div>
-                        <ul
-                            class="list-disc list-inside space-y-1 ml-1 text-on-error-container font-metadata text-metadata">
-                            @foreach ($errors->all() as $message)
-                                <li>{{ $message }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-                <!-- Title Field -->
-                <textarea name="title"
-                    class="w-full bg-transparent border-none focus:ring-0 font-display-lg text-display-lg resize-none placeholder:text-surface-variant text-on-surface mb-2 overflow-hidden"
-                    oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"' placeholder="Enter your title..."
-                    rows="1">{{ old('title', $post->title ?? '') }}</textarea>
-                @error('title')
-                    <p class="mb-6 text-sm text-error font-metadata pl-2">{{ $message }}</p>
-                @enderror
-
-                <!-- Main Content Editor -->
-                <textarea name="content" id="content"
-                    class="w-full min-h-[400px] bg-transparent resize-none border-none focus:ring-0 focus:outline-none font-body-lg text-body-lg text-on-surface leading-relaxed placeholder:text-surface-variant p-2"
-                    placeholder="Type your story...">{{ old('content', $post->content ?? '') }}</textarea>
-                @error('content')
-                    <p class="mt-2 text-sm text-error font-metadata pl-2">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <!-- Meta Section -->
-            <div class="mt-12 pt-8 border-t border-outline-variant space-y-6">
-                <h3 class="font-display-sm text-display-sm text-on-surface mb-6">SEO & Metadata</h3>
-
-                <div class="space-y-4">
-                    <div>
-                        <label for="meta_title" class="block font-ui-label text-ui-label text-on-surface mb-2">Meta Title</label>
-                        <input type="text" name="meta[title]" id="meta_title"
-                            value="{{ old('meta.title', $post->meta['title'] ?? '') }}"
-                            class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 font-body-md text-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-all"
-                            placeholder="SEO optimized title">
-                        @error('meta.title')
-                            <p class="mt-2 text-sm text-error font-metadata">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label for="meta_description" class="block font-ui-label text-ui-label text-on-surface mb-2">Meta Description</label>
-                        <textarea name="meta[description]" id="meta_description" rows="3"
-                            class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 font-body-md text-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-all"
-                            placeholder="Brief description for search engines">{{ old('meta.description', $post->meta['description'] ?? '') }}</textarea>
-                        @error('meta.description')
-                            <p class="mt-2 text-sm text-error font-metadata">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label for="meta_keywords" class="block font-ui-label text-ui-label text-on-surface mb-2">Keywords</label>
-                            <input type="text" name="meta[keywords]" id="meta_keywords"
-                                value="{{ old('meta.keywords', $post->meta['keywords'] ?? '') }}"
-                                class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 font-body-md text-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-all"
-                                placeholder="e.g. laravel, php, development">
-                            @error('meta.keywords')
-                                <p class="mt-2 text-sm text-error font-metadata">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <div>
-                            <label for="meta_url" class="block font-ui-label text-ui-label text-on-surface mb-2">URL</label>
-                            <input type="url" name="meta[url]" id="meta_url"
-                                value="{{ old('meta.url', $post->meta['url'] ?? '') }}"
-                                class="w-full bg-surface-container-lowest border border-outline-variant rounded-lg px-4 py-2 font-body-md text-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-all"
-                                placeholder="https://example.com/slug">
-                            @error('meta.url')
-                                <p class="mt-2 text-sm text-error font-metadata">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
-                </div>
+    <!-- Top Bar -->
+    <div class="sticky top-12 z-40 bg-surface/95 backdrop-blur-sm border-b border-outline-variant h-12">
+        <div class="flex items-center justify-between h-full px-4 max-w-6xl mx-auto">
+            <a href="{{ route('posts.index') }}" class="text-sm text-on-surface-variant hover:text-on-surface transition-colors">$ cancel</a>
+            <div class="flex items-center gap-3">
+                <button type="button" id="preview-toggle" class="text-xs text-on-surface-variant hover:text-primary transition-colors">[preview]</button>
+                <button type="button" id="ai" class="text-xs text-on-surface-variant hover:text-primary transition-colors">[ai]</button>
             </div>
         </div>
+    </div>
 
-        <!-- Sidebar: Publishing Settings -->
-        <aside
-            class="hidden lg:block w-80 shrink-0 h-fit sticky top-24 sidebar-overlay transition-opacity duration-500">
-            <div class="space-y-8 border-l border-outline-variant pl-8">
-                <!-- Cover Image -->
-                <section>
-                    <h3 class="font-ui-label text-ui-label text-on-surface mb-4 uppercase tracking-wider">Cover Image
-                    </h3>
-
-                    {{-- Clickable drop zone --}}
-                    <label for="cover_image_input"
-                        class="relative aspect-video w-full rounded-lg bg-surface-container border-2 border-dashed border-outline-variant flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-surface-container-high transition-colors group overflow-hidden block">
-
-                        {{-- Preview image (hidden until a file is chosen or post has one) --}}
-                        @if (isset($post) && $post->cover_image)
-                            <img id="cover-preview" src="{{ asset('storage/' . $post->cover_image) }}"
-                                alt="Cover preview" class="absolute inset-0 w-full h-full object-cover" />
-                        @else
-                            <img id="cover-preview" src="" alt="Cover preview"
-                                class="absolute inset-0 w-full h-full object-cover hidden" />
-                        @endif
-
-                        {{-- Overlay icon --}}
-                        <div id="cover-placeholder"
-                            class="flex flex-col items-center gap-2 {{ isset($post) && $post->cover_image ? 'opacity-0 group-hover:opacity-100 absolute inset-0 flex items-center justify-center bg-black/30 rounded-lg transition-opacity' : '' }}">
-                            <span
-                                class="material-symbols-outlined text-secondary group-hover:text-primary transition-colors">add_a_photo</span>
-                            <span class="font-metadata text-metadata text-secondary">Upload high-res photo</span>
-                        </div>
-                    </label>
-
-                    {{-- Hidden real file input --}}
-                    <input id="cover_image_input" type="file" name="cover_image" accept="image/*" class="sr-only"
-                        onchange="
-                            const file = this.files[0];
-                            if (!file) return;
-                            const preview = document.getElementById('cover-preview');
-                            const placeholder = document.getElementById('cover-placeholder');
-                            preview.src = URL.createObjectURL(file);
-                            preview.classList.remove('hidden');
-                            placeholder.classList.add('opacity-0');
-                        " />
-                    @error('cover_image')
-                        <p class="mt-2 text-sm text-error font-metadata text-center">{{ $message }}</p>
-                    @enderror
-
-                    {{-- Remove button (only if post already has a cover) --}}
-                    @if (isset($post) && $post->cover_image)
-                        <p class="mt-2 text-metadata font-metadata text-secondary text-center">
-                            Choose a new image to replace the current cover.
-                        </p>
-                    @endif
-                </section>
-
-                <!-- Category -->
-                <section>
-                    <h3 class="font-ui-label text-ui-label text-on-surface mb-4 uppercase tracking-wider">Category</h3>
-                    <div class="relative">
-                        <select name="category_id" id="post-category"
-                            class="w-full bg-white border border-outline-variant rounded-lg px-4 py-2 font-metadata text-metadata text-on-surface focus:ring-2 focus:ring-primary focus:border-primary transition-all appearance-none pr-8">
-                            <option value="">— No category —</option>
-                            @foreach ($categories ?? [] as $cat)
-                                <option value="{{ $cat->id }}"
-                                    {{ old('category_id', $post->category_id ?? '') == $cat->id ? 'selected' : '' }}>
-                                    {{ $cat->parent ? $cat->parent->name . ' › ' : '' }}{{ $cat->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <span
-                            class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-secondary pointer-events-none text-[18px]">expand_more</span>
-                    </div>
-                    @error('category_id')
-                        <p class="mt-2 text-sm text-error font-metadata">{{ $message }}</p>
-                    @enderror
-                    @if (isset($categories) && $categories->isEmpty())
-                        <p class="mt-2 text-metadata font-metadata text-secondary">
-                            No categories yet —
-                            <a href="{{ route('categories.create') }}" class="text-primary underline"
-                                target="_blank">create one</a>
-                        </p>
-                    @endif
-                </section>
-
-                <!-- Publish Date -->
-                <section>
-                    <h3 class="font-ui-label text-ui-label text-on-surface mb-4 uppercase tracking-wider">Publish Date</h3>
-                    <div class="relative">
-                        <input type="datetime-local" name="published_at" id="published_at"
-                            value="{{ old('published_at', isset($post) && $post->published_at ? (is_string($post->published_at) ? \Carbon\Carbon::parse($post->published_at)->format('Y-m-d\TH:i') : $post->published_at->format('Y-m-d\TH:i')) : '') }}"
-                            class="w-full bg-white border border-outline-variant rounded-lg px-4 py-2 font-metadata text-metadata text-on-surface focus:ring-2 focus:ring-primary focus:border-primary transition-all">
-                    </div>
-                    @error('published_at')
-                        <p class="mt-2 text-sm text-error font-metadata">{{ $message }}</p>
-                    @enderror
-                </section>
-
-                <!-- Tags -->
-                <section>
-                    <h3 class="font-ui-label text-ui-label text-on-surface mb-4 uppercase tracking-wider">Tags</h3>
-                    <div class="flex flex-wrap gap-2 mb-3">
-                        @foreach ($post->tags ?? [] as $tag)
-                            <span
-                                class="bg-primary-fixed text-on-primary-fixed px-3 py-1 rounded-full font-metadata text-metadata flex items-center gap-1">
-                                {{ $tag->name }}
-                            </span>
-                        @endforeach
-                    </div>
-                    <input name="tags"
-                        value="{{ old('tags', $post->exists ? $post->tags->pluck('name')->implode(', ') : '') }}"
-                        class="w-full bg-white border border-outline-variant rounded-lg px-4 py-2 font-metadata text-metadata focus:ring-1 focus:ring-primary focus:border-primary transition-all"
-                        placeholder="laravel, php, tutorial" type="text" />
-                    @error('tags')
-                        <p class="mt-2 text-sm text-error font-metadata">{{ $message }}</p>
-                    @enderror
-                </section>
-
-                <!-- SEO Preview -->
-                <section>
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-ui-label text-ui-label text-on-surface uppercase tracking-wider">SEO Preview
-                        </h3>
-                        <button type="button"
-                            class="text-primary font-metadata text-metadata hover:underline">Edit</button>
-                    </div>
-                    <div class="p-4 bg-white border border-outline-variant rounded-lg shadow-sm">
-                        <div class="text-[#1a0dab] font-sans text-[18px] leading-tight mb-1 truncate"
-                            id="seo-title-preview">
-                            {{ $post->title ?? '' ?: 'The Art of Digital Quiet | Ink & Paper' }}
-                        </div>
-                        <div class="text-[#006621] font-sans text-[14px] mb-1 truncate">
-                            {{ url('/posts/' . ($post->slug ?? '' ?: 'art-of-quiet')) }}
-                        </div>
-                        <p class="text-secondary font-sans text-[13px] line-clamp-2" id="seo-desc-preview">
-                            {{ $post->content ?? '' ?: 'Discover how a distraction-free writing environment can transform your creative process and help you find your voice in a noisy world...' }}
-                        </p>
-                    </div>
-                </section>
-
-                <!-- AI Write -->
-                <section>
-                    <button type="button" id="ai"
-                        class="w-full bg-primary text-white py-3 px-4 rounded-full font-ui-label text-ui-label uppercase tracking-wider hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
-                        <span class="material-symbols-outlined">auto_awesome</span>
-                        Write with AI
-                    </button>
-                </section>
-
-                <!-- Visibility / Status Toggle -->
-                <section class="pt-4 border-t border-outline-variant">
-                    <label class="flex items-center justify-between cursor-pointer group">
-                        <span
-                            class="font-ui-label text-ui-label text-secondary group-hover:text-on-surface transition-colors">Public
-                            Post</span>
-                        <div class="relative inline-flex items-center">
-                            <input name="status" value="published" class="sr-only peer" type="checkbox"
-                                {{ isset($post) && $post->status === 'published' ? 'checked' : '' }} />
-                            <div
-                                class="w-11 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary">
-                            </div>
-                        </div>
-                    </label>
-                </section>
-
-                <!-- Actions -->
-                <section class="pt-4 mt-8 border-t border-outline-variant flex flex-col gap-2">
-                    <button type="submit"
-                        class="w-full bg-primary text-white py-3 px-4 rounded-full font-ui-label text-ui-label uppercase tracking-wider hover:opacity-90 transition-opacity flex justify-center items-center gap-2">
-                        <span class="material-symbols-outlined">publish</span>
-                        {{ $title ?? 'Publish Post' }}
-                    </button>
-                    <a href="{{ route('posts.index') }}"
-                        class="w-full bg-surface-container text-on-surface py-3 px-4 rounded-full font-ui-label text-ui-label uppercase tracking-wider hover:bg-surface-container-high text-center transition-colors flex justify-center items-center gap-2">
-                        Cancel
-                    </a>
-                </section>
+    @if ($errors->any())
+        <div class="max-w-6xl mx-auto w-full px-4 mt-4">
+            <div class="p-3 bg-error/10 border border-error/30 rounded text-sm text-error">
+                <span class="font-bold">!</span> {{ $errors->first() }}
             </div>
-        </aside>
-    </main>
+        </div>
+    @endif
+
+    <!-- Two Column Layout -->
+    <div class="max-w-6xl mx-auto w-full px-4 py-6 flex gap-6">
+        <!-- Left: Editor -->
+        <div class="flex-1 min-w-0 space-y-4">
+            <textarea name="title"
+                class="w-full bg-transparent border-none focus:ring-0 text-2xl md:text-3xl font-bold resize-none placeholder:text-on-surface-variant/20 text-on-surface overflow-hidden"
+                oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"' placeholder="untitled"
+                rows="1">{{ old('title', $post->title ?? '') }}</textarea>
+            @error('title') <p class="text-xs text-error">{{ $message }}</p> @enderror
+
+            <div class="relative">
+                <textarea name="content" id="content"
+                    class="w-full min-h-[60vh] bg-transparent resize-none border-none focus:ring-0 focus:outline-none text-sm leading-relaxed placeholder:text-on-surface-variant/20 text-on-surface"
+                    style="font-family: 'Courier New', Courier, monospace;"
+                    placeholder="> write markdown here...
+
+# Heading 1
+## Heading 2
+
+**bold** and *italic*
+
+- list item
+- another item
+
+`inline code`
+
+```
+code block
+```
+
+> blockquote
+
+[link](url)">{{ old('content', $post->content ?? '') }}</textarea>
+                <div id="preview" class="hidden w-full min-h-[60vh] prose-terminal text-sm leading-relaxed p-2"></div>
+            </div>
+            @error('content') <p class="text-xs text-error">{{ $message }}</p> @enderror
+        </div>
+
+        <!-- Right: Settings -->
+        <div class="hidden md:block w-56 shrink-0 space-y-4">
+            <div>
+                <label class="text-xs text-on-surface-variant/50 block mb-1">$ category</label>
+                <select name="category_id" class="w-full bg-surface-container border border-outline-variant rounded px-2 py-1.5 text-xs focus:ring-1 focus:ring-primary focus:border-primary transition-all text-on-surface">
+                    <option value="">none</option>
+                    @foreach ($categories ?? [] as $cat)
+                        <option value="{{ $cat->id }}" {{ old('category_id', $post->category_id ?? '') == $cat->id ? 'selected' : '' }}>
+                            {{ $cat->parent ? $cat->parent->name . ' > ' : '' }}{{ $cat->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label class="text-xs text-on-surface-variant/50 block mb-1">$ tags</label>
+                <input name="tags" value="{{ old('tags', $post->exists ? $post->tags->pluck('name')->implode(', ') : '') }}"
+                    class="w-full bg-surface-container border border-outline-variant rounded px-2 py-1.5 text-xs focus:ring-1 focus:ring-primary focus:border-primary transition-all text-on-surface placeholder:text-on-surface-variant/30"
+                    placeholder="tag1, tag2" type="text" />
+            </div>
+            <div>
+                <label class="text-xs text-on-surface-variant/50 block mb-1">$ cover</label>
+                <input type="file" name="cover_image" accept="image/*" class="w-full text-[10px] text-on-surface-variant file:mr-1 file:py-1 file:px-1.5 file:rounded file:border file:border-outline-variant file:text-[10px] file:bg-surface-container file:text-on-surface" />
+            </div>
+            <div>
+                <label class="text-xs text-on-surface-variant/50 block mb-1">$ publish</label>
+                <input type="datetime-local" name="published_at"
+                    value="{{ old('published_at', isset($post) && $post->published_at ? (is_string($post->published_at) ? \Carbon\Carbon::parse($post->published_at)->format('Y-m-d\TH:i') : $post->published_at->format('Y-m-d\TH:i')) : '') }}"
+                    class="w-full bg-surface-container border border-outline-variant rounded px-2 py-1.5 text-xs focus:ring-1 focus:ring-primary focus:border-primary transition-all text-on-surface" />
+            </div>
+            <div>
+                <label class="text-xs text-on-surface-variant/50 block mb-1">$ seo title</label>
+                <input type="text" name="meta[title]" value="{{ old('meta.title', $post->meta['title'] ?? '') }}"
+                    class="w-full bg-surface-container border border-outline-variant rounded px-2 py-1.5 text-xs focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all text-on-surface placeholder:text-on-surface-variant/30"
+                    placeholder="meta title">
+            </div>
+            <div>
+                <label class="text-xs text-on-surface-variant/50 block mb-1">$ seo desc</label>
+                <input type="text" name="meta[description]" value="{{ old('meta.description', $post->meta['description'] ?? '') }}"
+                    class="w-full bg-surface-container border border-outline-variant rounded px-2 py-1.5 text-xs focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all text-on-surface placeholder:text-on-surface-variant/30"
+                    placeholder="meta description">
+            </div>
+            <input type="hidden" name="status" id="status-field" value="{{ isset($post) && $post->status === 'published' ? 'published' : 'draft' }}">
+            <div class="space-y-1.5">
+                <button type="submit" class="w-full bg-primary text-on-primary px-4 py-2 rounded text-sm hover:opacity-90 transition-opacity" onclick="document.getElementById('status-field').value='published'">
+                    $ publish
+                </button>
+                <button type="submit" class="w-full bg-surface-container border border-outline-variant text-on-surface px-4 py-2 rounded text-sm hover:bg-surface-container-high transition-colors" onclick="document.getElementById('status-field').value='draft'">
+                    $ save draft
+                </button>
+            </div>
+        </div>
+    </div>
 </form>
 
 <script>
     const btn = document.getElementById('ai');
     const content = document.getElementById('content');
+    const preview = document.getElementById('preview');
+    const previewToggle = document.getElementById('preview-toggle');
+    let isPreview = false;
 
-    btn.addEventListener('click', function name(event) {
-        event.preventDefault();
-        let message = window.prompt('Describe your post idea:');
+    // Simple markdown parser
+    function mdToHtml(md) {
+        return md
+            .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+            .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+            .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/`([^`]+)`/g, '<code>$1</code>')
+            .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
+            .replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>')
+            .replace(/^- (.*$)/gm, '<li>$1</li>')
+            .replace(/\n/g, '<br>');
+    }
+
+    previewToggle?.addEventListener('click', function() {
+        isPreview = !isPreview;
+        if (isPreview) {
+            preview.innerHTML = mdToHtml(content.value) || '<span class="text-on-surface-variant/30">nothing to preview</span>';
+            preview.classList.remove('hidden');
+            content.classList.add('hidden');
+            this.textContent = '[edit]';
+        } else {
+            preview.classList.add('hidden');
+            content.classList.remove('hidden');
+            this.textContent = '[preview]';
+        }
+    });
+
+    btn?.addEventListener('click', function(e) {
+        e.preventDefault();
+        let message = window.prompt('Post idea:');
         if (message) {
             const evtSource = new EventSource("{{ route('posts.ai') }}?message=" + encodeURIComponent(message));
-            evtSource.onmessage = function (event) {
-                if (event.data === '[DONE]') {
-                    evtSource.close();
-                    return;
-                }
-                try {
-                    let data = JSON.parse(event.data);
-                    if (data?.delta) {
-                        content.value = content.value + data.delta;
-                    }
-                    if (data?.error) {
-                        console.error("AI Write error:", data.error);
-                        alert("AI Write failed: " + data.error);
-                        evtSource.close();
-                    }
-                } catch (e) {
-                    console.error("JSON parse error", e);
-                }
+            evtSource.onmessage = function(event) {
+                if (event.data === '[DONE]') { evtSource.close(); return; }
+                try { let d = JSON.parse(event.data); if (d?.delta) content.value += d.delta; } catch(e) {}
             };
-            evtSource.onerror = function (event) {
-                if (evtSource.readyState === EventSource.CLOSED) return;
-                console.error("EventSource failed.");
-                evtSource.close();
-            };
+            evtSource.onerror = function() { evtSource.close(); };
         }
     });
 </script>
