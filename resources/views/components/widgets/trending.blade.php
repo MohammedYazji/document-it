@@ -1,32 +1,17 @@
-<div class="bg-white border border-outline-variant rounded-xl p-6 space-y-6">
-    <h3 class="font-headline-md text-[20px] text-on-surface">Trending on Ink</h3>
-    <div class="space-y-6">
-        <div class="flex gap-4">
-            <span class="font-display-lg text-secondary opacity-30 leading-none">01</span>
-            <div class="space-y-1">
-                <h4
-                    class="font-ui-label text-ui-label font-bold text-on-surface leading-tight hover:text-primary cursor-pointer">
-                    The Carbon Cost of AI Writing</h4>
-                <p class="font-metadata text-metadata text-secondary">Tech • 4 min read</p>
-            </div>
+<div class="bg-surface border border-outline-variant rounded-lg p-4 space-y-3">
+    <p class="text-xs text-on-surface-variant/50 uppercase tracking-widest">$ trending</p>
+    <div class="space-y-3">
+        <div class="flex gap-2">
+            <span class="text-xs text-on-surface-variant/30 shrink-0">01</span>
+            <p class="text-xs text-on-surface hover:text-primary cursor-pointer transition-colors line-clamp-2">The Carbon Cost of AI Writing</p>
         </div>
-        <div class="flex gap-4">
-            <span class="font-display-lg text-secondary opacity-30 leading-none">02</span>
-            <div class="space-y-1">
-                <h4
-                    class="font-ui-label text-ui-label font-bold text-on-surface leading-tight hover:text-primary cursor-pointer">
-                    Interview: The Poet in the Machine</h4>
-                <p class="font-metadata text-metadata text-secondary">Culture • 15 min read</p>
-            </div>
+        <div class="flex gap-2">
+            <span class="text-xs text-on-surface-variant/30 shrink-0">02</span>
+            <p class="text-xs text-on-surface hover:text-primary cursor-pointer transition-colors line-clamp-2">Interview: The Poet in the Machine</p>
         </div>
-        <div class="flex gap-4">
-            <span class="font-display-lg text-secondary opacity-30 leading-none">03</span>
-            <div class="space-y-1">
-                <h4
-                    class="font-ui-label text-ui-label font-bold text-on-surface leading-tight hover:text-primary cursor-pointer">
-                    Reclaiming Your Time from Algorithms</h4>
-                <p class="font-metadata text-metadata text-secondary">Life • 6 min read</p>
-            </div>
+        <div class="flex gap-2">
+            <span class="text-xs text-on-surface-variant/30 shrink-0">03</span>
+            <p class="text-xs text-on-surface hover:text-primary cursor-pointer transition-colors line-clamp-2">Reclaiming Your Time from Algorithms</p>
         </div>
     </div>
 </div>

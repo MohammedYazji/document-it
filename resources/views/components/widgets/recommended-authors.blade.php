@@ -1,36 +1,28 @@
-<div class="space-y-6">
-    <h3 class="font-ui-label text-ui-label uppercase tracking-widest text-secondary font-bold">{{ $title }}</h3>
-    <div class="space-y-4">
-        @foreach ($authors as $author)
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <img alt="{{ $author->name }}" class="w-10 h-10 rounded-full object-cover"
-                        src="{{ $author->avatoar ?? 'https://ui-avatars.com/api/?name=' . urlencode($author->name) . '&color=7F9CF5&background=EBF4FF' }}" />
-                    <div>
-                        <p class="font-ui-label text-ui-label font-bold text-on-surface">{{ $author->name }}</p>
-                        <p class="font-metadata text-metadata text-secondary">{{ $author->username ? '@' . $author->username : 'Author' }}</p>
-                    </div>
+<div class="bg-surface border border-outline-variant rounded-lg p-4 space-y-3">
+    <p class="text-xs text-on-surface-variant/50 uppercase tracking-widest">$ {{ $title ?? 'authors' }}</p>
+    @foreach ($authors ?? [] as $author)
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2 min-w-0">
+                <div class="w-5 h-5 rounded bg-surface-container border border-outline-variant flex items-center justify-center shrink-0">
+                    <span class="text-[10px] text-on-surface-variant">@</span>
                 </div>
-                @auth
-                    @if ($author->is_followed)
-                        <form method="POST" action="{{ route('follow.destroy') }}">
-                            @csrf
-                            @method('DELETE')
-                            <input type="hidden" name="user_id" value="{{ $author->id }}">
-                            <button type="submit"
-                                class="px-3 py-1 border border-on-surface text-on-surface rounded-full font-metadata text-metadata font-bold hover:bg-on-surface hover:text-white transition-all">Unfollow</button>
-                        </form>
-                    @else
-                        <form method="POST" action="{{ route('follow.store') }}">
-                            @csrf
-                            <input type="hidden" name="user_id" value="{{ $author->id }}">
-                            <button type="submit"
-                                class="px-3 py-1 border border-on-surface text-on-surface rounded-full font-metadata text-metadata font-bold hover:bg-on-surface hover:text-white transition-all">Follow</button>
-                        </form>
-                    @endif
-                @endauth
+                <span class="text-xs text-on-surface truncate">{{ $author->name }}</span>
             </div>
-        @endforeach
-        {{-- <a class="block font-ui-label text-ui-label text-primary font-bold hover:underline" href="#">View all recommendations</a> --}}
-    </div>
+            @auth
+                @if ($author->is_followed)
+                    <form method="POST" action="{{ route('follow.destroy') }}">
+                        @csrf @method('DELETE')
+                        <input type="hidden" name="user_id" value="{{ $author->id }}">
+                        <button type="submit" class="text-[10px] text-on-surface-variant hover:text-primary transition-colors">unfollow</button>
+                    </form>
+                @else
+                    <form method="POST" action="{{ route('follow.store') }}">
+                        @csrf
+                        <input type="hidden" name="user_id" value="{{ $author->id }}">
+                        <button type="submit" class="text-[10px] text-primary hover:underline transition-colors">follow</button>
+                    </form>
+                @endif
+            @endauth
+        </div>
+    @endforeach
 </div>
