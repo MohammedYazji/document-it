@@ -17,6 +17,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
+use League\CommonMark\Environment\Environment;
+use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
+use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
+use League\CommonMark\MarkdownConverter;
 
 #[ScopedBy(OwnerScope::class)]
 #[ObserverBy(PostObserver::class)]
@@ -140,8 +144,13 @@ class Post extends Model
     public function content(): Attribute
     {
         return new Attribute(
-            set: fn ($value) => strip_tags($value, '<h2><h3><h4><h5><h6><p><a><ul><ol><li><br><strong><em><img><video><audio>'),
+            get: fn ($value) => $value,
         );
+    }
+
+    public function getContentHtmlAttribute(): string
+    {
+        return $this->markdownToHtml($this->attributes['content'] ?? '');
     }
 
     public function title(): Attribute
@@ -218,5 +227,20 @@ class Post extends Model
         if ($this->cover_image && Storage::exists($this->cover_image)) {
             Storage::delete($this->cover_image);
         }
+    }
+
+    protected function markdownToHtml(?string $markdown): string
+    {
+        if (empty($markdown)) {
+            return '';
+        }
+
+        $environment = new Environment([]);
+        $environment->addExtension(new CommonMarkCoreExtension());
+        $environment->addExtension(new GithubFlavoredMarkdownExtension());
+
+        $converter = new MarkdownConverter($environment);
+
+        return $converter->convertToHtml($markdown)->getContent();
     }
 }
