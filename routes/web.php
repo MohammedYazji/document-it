@@ -26,15 +26,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('bookmarks', [BookmarkController::class, 'store'])->name('bookmarks.store');
     Route::delete('bookmarks', [BookmarkController::class, 'destroy'])->name('bookmarks.destroy');
 
-    // Dashboard (admin & super-admin only)
-    Route::middleware('user.type:admin,super-admin')->prefix('dashboard')->group(function () {
+    // Dashboard
+    Route::prefix('dashboard')->group(function () {
 
         // User management (super-admin only)
         Route::middleware('user.type:super-admin')->prefix('admin')->name('admin.')->group(function () {
             Route::resource('users', UserController::class);
         });
 
-        // Notifications
+        // Notifications (all authenticated users)
         Route::prefix('notifications')->name('notifications.')->group(function () {
             Route::get('/', [NotificationController::class, 'index'])->name('index');
             Route::patch('/{id}/read', [NotificationController::class, 'read'])->name('read');
@@ -42,17 +42,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::delete('/{id}', [NotificationController::class, 'destroy'])->name('destroy');
         });
 
-        // AI Write (must be before resource route to avoid matching {post})
+        // Posts (all authenticated users - owners can manage their own)
         Route::get('posts/ai', AiWriteController::class)->name('posts.ai');
-
-        // Posts
         Route::patch('posts/{post}/restore', [PostController::class, 'restore'])->name('posts.restore');
         Route::delete('posts/{post}/force-delete', [PostController::class, 'forceDelete'])->name('posts.forceDelete');
         Route::resource('posts', PostController::class)->names([
             'index', 'create', 'store', 'show', 'edit', 'update', 'destroy',
         ]);
 
-        // Categories
+        // Categories (all authenticated users)
         Route::resource('categories', CategoryController::class)->names([
             'index', 'create', 'store', 'edit', 'update', 'destroy',
         ]);

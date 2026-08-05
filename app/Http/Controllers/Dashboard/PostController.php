@@ -11,32 +11,47 @@ use App\Models\Post;
 use App\Services\PostService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
+    protected function authorizePost(Post $post): void
+    {
+        $user = Auth::user();
+
+        if ($user->type === 'super-admin' || $user->type === 'admin') {
+            return;
+        }
+
+        if ($post->user_id !== $user->id) {
+            abort(403);
+        }
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
         $status = $request->query('status', 'all');
-
         $user = Auth::user();
 
-        $posts_all = Post::get();
-
-        $posts = Post::with('category', 'user')
-            ->select('id', 'category_id', 'title', 'slug', 'status', 'created_at', 'published_at', 'deleted_at')
-            // ->addSelect(
-            //     DB::raw('SELECT COUNT(+) FROM comments WHERE comments.post_id = posts.id AS comments_count')
-            // )
+        $query = Post::with('category', 'user')
+            ->select('id', 'category_id', 'user_id', 'title', 'slug', 'status', 'created_at', 'published_at', 'deleted_at')
             ->withCount('comments')
             ->when($status !== 'all', fn ($query) => $query->where('status', $status))
-            ->withTrashed()
-            ->latest()
-            ->paginate(3);
+            ->withTrashed();
+
+        if ($user->type !== 'super-admin' && $user->type !== 'admin') {
+            $query->where('user_id', $user->id);
+        }
+
+        $posts = $query->latest()->paginate(3);
+        $posts_all = $user->type === 'super-admin' || $user->type === 'admin'
+            ? Post::get()
+            : Post::where('user_id', $user->id)->get();
 
         return view('dashboard.posts.index', [
             'posts' => $posts,
@@ -65,7 +80,7 @@ class PostController extends Controller
         $tagsInput = $data['tags'] ?? null;
         unset($data['tags']);
 
-        $data['status'] = $request->has('status') ? 'published' : 'draft';
+        $data['status'] = $data['status'] ?? 'draft';
         $data['user_id'] = $request->user()->id;
 
         try {
@@ -92,6 +107,7 @@ class PostController extends Controller
 
         return view('posts.show', [
             'post' => $post,
+            'relatedPosts' => $post->related(3),
         ]);
     }
 
@@ -101,6 +117,7 @@ class PostController extends Controller
     public function edit(int $id)
     {
         $post = Post::with('tags')->findOrFail($id);
+        $this->authorizePost($post);
 
         return view('dashboard.posts.edit', [
             'post' => $post,
@@ -114,15 +131,14 @@ class PostController extends Controller
     public function update(PostRequest $request, string $id, FileUpload $fileUpload, SyncTags $syncTags)
     {
         $post = Post::findOrFail($id);
+        $this->authorizePost($post);
 
         $data = [
             'slug' => Str::slug($request->post('title')),
-            'status' => $request->has('status') ? 'published' : 'draft',
+            'status' => $request->post('status') ?? 'draft',
         ];
 
-        // Handle new cover image upload
         if ($request->hasFile('cover_image')) {
-            // Delete old image if it exists
             if ($post->cover_image) {
                 Storage::disk('public')->delete($post->cover_image);
             }
@@ -138,7 +154,6 @@ class PostController extends Controller
             $syncTags->handle($post, $request->validated('tags'));
         });
 
-        // PRG: POST Redirect GET
         return redirect()->route('posts.index');
     }
 
@@ -148,6 +163,7 @@ class PostController extends Controller
     public function restore(string $id)
     {
         $post = Post::onlyTrashed()->findOrFail($id);
+        $this->authorizePost($post);
         $post->restore();
 
         return redirect()->route('posts.index')->with('success', 'Post restored successfully.');
@@ -159,9 +175,9 @@ class PostController extends Controller
     public function destroy(string $id)
     {
         $post = Post::findOrFail($id);
+        $this->authorizePost($post);
         $post->delete();
 
-        // PRG: POST Redirect GET
         return redirect()->route('posts.index')->with('success', 'Post sent to trash.');
     }
 
@@ -171,7 +187,7 @@ class PostController extends Controller
     public function forceDelete(string $id)
     {
         $post = Post::onlyTrashed()->findOrFail($id);
-
+        $this->authorizePost($post);
         $post->forceDelete();
 
         return redirect()->route('posts.index')->with('success', 'Post permanently deleted.');

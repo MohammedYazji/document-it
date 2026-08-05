@@ -9,15 +9,12 @@ use Illuminate\Support\Facades\Auth;
 
 class OwnerScope implements Scope
 {
-    /**
-     * Apply the scope to a given Eloquent query builder.
-     */
     public function apply(Builder $builder, Model $model): void
     {
         if (Auth::check()) {
             $user = Auth::user();
-            if ($user->is_admin) {
-                return; // skip adding global scope for admin users
+            if (in_array($user->type, ['admin', 'super-admin'])) {
+                return;
             }
 
             if (request()->is('dashboard*')) {

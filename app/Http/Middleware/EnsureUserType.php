@@ -8,14 +8,13 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EnsureUserType
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  Closure(Request): (Response)  $next
-     */
     public function handle(Request $request, Closure $next, string ...$types): Response
     {
-        if (! in_array($request->user()?->type, $types)) {
+        if (! $request->user()) {
+            abort(403);
+        }
+
+        if (! in_array($request->user()->type, $types)) {
             abort(403);
         }
 
