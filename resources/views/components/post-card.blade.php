@@ -1,20 +1,38 @@
 @props(['post'])
 
 <a href="{{ route('post.show', $post->slug) }}" class="block group">
-  <article class="flex gap-4 p-4 border border-outline-variant rounded-lg bg-surface hover:border-primary transition-colors">
-    <img alt="" class="w-24 h-24 rounded object-cover opacity-80 group-hover:opacity-100 transition-opacity shrink-0" src="{{ $post->thumbnail_url }}" />
-    <div class="flex flex-col justify-between min-w-0">
-      <div class="space-y-1">
-        <div class="flex items-center gap-2 text-xs text-on-surface-variant">
-          <span class="text-primary">{{ $post->category->name }}</span>
-          <span class="text-on-surface-variant/30">|</span>
-          <span>{{ $post->publish_time->format('M d') }}</span>
-        </div>
-        <h3 class="text-on-surface font-bold text-sm group-hover:text-primary transition-colors line-clamp-2">{{ $post->title }}</h3>
+  <article class="p-4 border border-outline-variant rounded-lg bg-surface hover:border-primary transition-all hover:shadow-[0_0_15px_rgba(88,166,255,0.1)]">
+    {{-- Header: category + date --}}
+    <div class="flex items-center gap-2 text-xs text-on-surface-variant mb-2">
+      <span class="text-primary font-bold">$</span>
+      <span class="text-primary">{{ $post->category->name }}</span>
+      <span class="text-on-surface-variant/30">|</span>
+      <span>{{ $post->publish_time->format('M d, Y') }}</span>
+      <span class="text-on-surface-variant/30">|</span>
+      <span>{{ $post->views }} views</span>
+    </div>
+
+    {{-- Title --}}
+    <h3 class="text-on-surface font-bold text-base mb-2 group-hover:text-primary transition-colors">{{ $post->title }}</h3>
+
+    {{-- Excerpt as code block --}}
+    @if($post->excerpt)
+      <div class="bg-surface-container border border-outline-variant rounded p-3 mb-3">
+        <p class="text-xs text-on-surface-variant leading-relaxed line-clamp-2" style="font-family: 'Courier New', Courier, monospace;">
+          <span class="text-on-surface-variant/30">//</span> {{ $post->excerpt }}
+        </p>
       </div>
-      <div class="flex items-center justify-between">
-        <span class="text-xs text-on-surface-variant/60">{{ $post->user->name }}</span>
-        <span class="text-xs text-on-surface-variant/40">{{ $post->views }}v</span>
+    @endif
+
+    {{-- Footer --}}
+    <div class="flex items-center justify-between text-xs">
+      <div class="flex items-center gap-2 text-on-surface-variant/60">
+        <span class="text-primary/60">></span>
+        <span>{{ $post->user->name }}</span>
+      </div>
+      <div class="flex items-center gap-3 text-on-surface-variant/40">
+        <span>{{ $post->read_time }}min</span>
+        <span class="text-primary/40">-></span>
       </div>
     </div>
   </article>
