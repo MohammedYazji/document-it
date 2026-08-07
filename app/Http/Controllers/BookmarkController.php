@@ -2,10 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Post;
 use Illuminate\Http\Request;
 
 class BookmarkController extends Controller
 {
+    public function index(Request $request)
+    {
+        $bookmarks = $request->user()->bookmarks()
+            ->with(['category', 'user'])
+            ->withCount('comments')
+            ->latest('bookmarks.created_at')
+            ->paginate(10);
+
+        return view('dashboard.bookmarks', compact('bookmarks'));
+    }
+
     public function store(Request $request)
     {
         $request->validate(['post_id' => 'required|int|exists:posts,id']);

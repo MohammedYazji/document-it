@@ -32,11 +32,17 @@
                     href="{{ route('categories.index') }}">
                     $ categories
                 </a>
-                <a class="flex items-center gap-2 px-3 py-2 rounded text-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"
-                    href="#">
-                    $ authors
-                </a>
                 @auth
+                    <a class="flex items-center gap-2 px-3 py-2 rounded text-sm {{ request()->routeIs('bookmarks.*') ? 'bg-primary/10 text-primary' : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface' }} transition-colors"
+                        href="{{ route('bookmarks.index') }}">
+                        $ bookmarks
+                    </a>
+                @endauth
+                @auth
+                    <a class="flex items-center gap-2 px-3 py-2 rounded text-sm {{ request()->routeIs('bookmarks.*') ? 'bg-primary/10 text-primary' : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface' }} transition-colors"
+                        href="{{ route('bookmarks.index') }}">
+                        $ bookmarks
+                    </a>
                     <a class="flex items-center gap-2 px-3 py-2 rounded text-sm text-primary hover:bg-primary/10 transition-colors"
                         href="{{ route('posts.create') }}">
                         $ new post
@@ -78,8 +84,8 @@
                     <a class="block px-3 py-2 rounded text-sm {{ request()->routeIs('home') ? 'bg-primary/10 text-primary' : 'text-on-surface-variant hover:bg-surface-container' }}" href="{{ route('home') }}">$ feed</a>
                     <a class="block px-3 py-2 rounded text-sm {{ request()->routeIs('posts.*') ? 'bg-primary/10 text-primary' : 'text-on-surface-variant hover:bg-surface-container' }}" href="{{ route('posts.index') }}">$ dashboard</a>
                     <a class="block px-3 py-2 rounded text-sm {{ request()->routeIs('categories.*') ? 'bg-primary/10 text-primary' : 'text-on-surface-variant hover:bg-surface-container' }}" href="{{ route('categories.index') }}">$ categories</a>
-                    <a class="block px-3 py-2 rounded text-sm text-on-surface-variant hover:bg-surface-container" href="#">$ authors</a>
                     @auth
+                        <a class="block px-3 py-2 rounded text-sm {{ request()->routeIs('bookmarks.*') ? 'bg-primary/10 text-primary' : 'text-on-surface-variant hover:bg-surface-container' }}" href="{{ route('bookmarks.index') }}">$ bookmarks</a>
                         <a class="block px-3 py-2 rounded text-sm text-primary hover:bg-primary/10" href="{{ route('posts.create') }}">$ new post</a>
                     @endauth
                 </aside>
