@@ -6,6 +6,7 @@ use App\Http\Controllers\Dashboard\CategoryController;
 use App\Http\Controllers\Dashboard\NotificationController;
 use App\Http\Controllers\Dashboard\PostController;
 use App\Http\Controllers\Dashboard\UserController;
+use App\Http\Controllers\Auth\SocialiteController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
@@ -13,7 +14,12 @@ use Illuminate\Support\Facades\Route;
 // Public Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/posts/{slug}', [HomeController::class, 'show'])->name('post.show');
+Route::get('/tags/{tag}', [HomeController::class, 'tag'])->name('tag.show');
 Route::get('/u/{username}', fn () => null)->name('users.profile');
+
+// Google OAuth
+Route::get('/auth/google', [SocialiteController::class, 'redirect'])->name('google.redirect');
+Route::get('/auth/google/callback', [SocialiteController::class, 'callback'])->name('google.callback');
 
 // Authenticated Routes
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -23,6 +29,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('follow', [FollowController::class, 'destroy'])->name('follow.destroy');
 
     // Bookmarks
+    Route::get('bookmarks', [BookmarkController::class, 'index'])->name('bookmarks.index');
     Route::post('bookmarks', [BookmarkController::class, 'store'])->name('bookmarks.store');
     Route::delete('bookmarks', [BookmarkController::class, 'destroy'])->name('bookmarks.destroy');
 
