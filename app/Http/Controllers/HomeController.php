@@ -3,40 +3,38 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Models\Tag;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Cache;
 
 class HomeController extends Controller
 {
     public function index(Request $request)
     {
-        $page = $request->query('page', 1);
-
-        $key = "home_posts_{$page}";
-        $cached = Cache::get($key);
-        if ($cached) {
-            class_exists(LengthAwarePaginator::class);
-            $posts = unserialize($cached);
-        } else {
-            $posts = Post::query()->published()->latest()->paginate(3);
-            Cache::put($key, serialize($posts), 300);
-        }
+        $posts = Post::query()->published()->latest()->paginate(3);
 
         return view('home', compact('posts'));
     }
 
+    public function tag($slug)
+    {
+        $tag = Tag::where('slug', $slug)->firstOrFail();
+
+        $posts = Post::query()
+            ->published()
+            ->whereHas('tags', fn ($q) => $q->where('tags.id', $tag->id))
+            ->latest()
+            ->paginate(10);
+
+        return view('home', compact('posts', 'tag'));
+    }
+
     public function show($slug)
     {
-        $post = Cache::remember("home_post_{$slug}", 3600, function () use ($slug) {
-            return Post::query()->published()->where('slug', $slug)->firstOrFail();
-        });
+        $post = Post::query()->published()->where('slug', $slug)->firstOrFail();
 
         event('posts.view', $post);
 
-        $relatedPosts = Cache::remember("home_post_{$slug}_related", 3600, function () use ($post) {
-            return $post->related(sameCategory: true);
-        });
+        $relatedPosts = $post->related(sameCategory: true);
 
         return view('posts.show', compact('post', 'relatedPosts'));
     }

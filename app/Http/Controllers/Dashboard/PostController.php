@@ -85,6 +85,7 @@ class PostController extends Controller
 
         try {
             $postService->create($data, $tagsInput);
+            
         } catch (\RuntimeException $e) {
             return redirect()->back()
                 ->withInput()
@@ -154,6 +155,8 @@ class PostController extends Controller
             $syncTags->handle($post, $request->validated('tags'));
         });
 
+        
+
         return redirect()->route('posts.index');
     }
 
@@ -165,6 +168,8 @@ class PostController extends Controller
         $post = Post::onlyTrashed()->findOrFail($id);
         $this->authorizePost($post);
         $post->restore();
+
+        
 
         return redirect()->route('posts.index')->with('success', 'Post restored successfully.');
     }
@@ -178,6 +183,8 @@ class PostController extends Controller
         $this->authorizePost($post);
         $post->delete();
 
+        
+
         return redirect()->route('posts.index')->with('success', 'Post sent to trash.');
     }
 
@@ -189,6 +196,8 @@ class PostController extends Controller
         $post = Post::onlyTrashed()->findOrFail($id);
         $this->authorizePost($post);
         $post->forceDelete();
+
+        
 
         return redirect()->route('posts.index')->with('success', 'Post permanently deleted.');
     }
