@@ -11,9 +11,9 @@
       <div class="sticky top-16">
         <p class="text-xs text-on-surface-variant/50 uppercase tracking-widest mb-2">tags</p>
         <div class="flex flex-wrap gap-1.5">
-          <a class="px-2 py-1 text-xs bg-surface border border-outline-variant rounded text-on-surface-variant hover:border-primary hover:text-primary transition-colors" href="#">#dev</a>
-          <a class="px-2 py-1 text-xs bg-surface border border-outline-variant rounded text-on-surface-variant hover:border-primary hover:text-primary transition-colors" href="#">#tutorial</a>
-          <a class="px-2 py-1 text-xs bg-surface border border-outline-variant rounded text-on-surface-variant hover:border-primary hover:text-primary transition-colors" href="#">#code</a>
+          @foreach(\App\Models\Tag::all() as $tag)
+            <a class="px-2 py-1 text-xs bg-surface border border-outline-variant rounded text-on-surface-variant hover:border-primary hover:text-primary transition-colors {{ isset($tag) && $tag->id === $tag->id ? 'border-primary text-primary' : '' }}" href="{{ route('tag.show', $tag->slug) }}">#{{ $tag->name }}</a>
+          @endforeach
         </div>
       </div>
     </aside>
