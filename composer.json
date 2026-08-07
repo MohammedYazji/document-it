@@ -17,6 +17,7 @@
         "laravel/fortify": "*",
         "laravel/framework": "^13.0",
         "laravel/sanctum": "^4.0",
+        "laravel/socialite": "*",
         "laravel/tinker": "^3.0",
         "league/commonmark": "*",
         "pusher/pusher-php-server": "*"
