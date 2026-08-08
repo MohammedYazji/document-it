@@ -37,12 +37,6 @@
                         href="{{ route('bookmarks.index') }}">
                         $ bookmarks
                     </a>
-                @endauth
-                @auth
-                    <a class="flex items-center gap-2 px-3 py-2 rounded text-sm {{ request()->routeIs('bookmarks.*') ? 'bg-primary/10 text-primary' : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface' }} transition-colors"
-                        href="{{ route('bookmarks.index') }}">
-                        $ bookmarks
-                    </a>
                     <a class="flex items-center gap-2 px-3 py-2 rounded text-sm text-primary hover:bg-primary/10 transition-colors"
                         href="{{ route('posts.create') }}">
                         $ new post
@@ -65,8 +59,12 @@
                     </div>
                     <div class="flex items-center gap-3 text-sm">
                         @php $unreadCount = Auth::check() ? Auth::user()->unreadNotifications()->count() : 0 @endphp
-                        <a href="{{ route('notifications.index') }}" class="text-on-surface-variant hover:text-primary transition-colors">
-                            [inbox{{ $unreadCount > 0 ? ' ' . $unreadCount : '' }}]
+                        <a href="{{ route('notifications.index') }}" class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1.5">
+                            [inbox]
+                            <span data-unread-badge class="relative flex h-2 w-2 {{ $unreadCount > 0 ? '' : 'hidden' }}">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                            </span>
                         </a>
                         <span class="text-on-surface-variant/30">|</span>
                         <span class="text-on-surface-variant/50">{{ date('D') }}</span>
