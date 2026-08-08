@@ -19,8 +19,23 @@
                         "body": "{{ addslashes($data['body'] ?? $data['title'] ?? '') }}"
                     </div>
                     @if(isset($data['link']))
-                    <div class="pl-4 text-on-surface">
-                        "link": "{{ $data['link'] }}"
+                    <div class="pl-4 flex items-center gap-3 mt-1">
+                        <a href="{{ $data['link'] }}" class="text-primary hover:underline text-xs">
+                            "link": "{{ $data['link'] }}"
+                        </a>
+                        @if(isset($data['meta']['follower_username']))
+                            @php
+                                $isFollowing = auth()->check() && auth()->user()->followings()->where('user_id', $data['meta']['follower_id'])->exists();
+                            @endphp
+                            <form method="POST" action="{{ $isFollowing ? route('follow.destroy') : route('follow.store') }}" class="inline">
+                                @csrf
+                                @if($isFollowing) @method('DELETE') @endif
+                                <input type="hidden" name="user_id" value="{{ $data['meta']['follower_id'] }}">
+                                <button type="submit" class="text-xs px-2 py-0.5 rounded {{ $isFollowing ? 'bg-surface-container border border-outline-variant text-on-surface-variant' : 'bg-primary text-on-primary' }}">
+                                    $ {{ $isFollowing ? 'unfollow' : 'follow back' }}
+                                </button>
+                            </form>
+                        @endif
                     </div>
                     @endif
                     <div class="text-on-surface-variant/50">}</div>
