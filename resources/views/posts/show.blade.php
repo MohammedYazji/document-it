@@ -22,14 +22,16 @@
             @if($post->excerpt)
                 <p class="text-on-surface-variant">{{ $post->excerpt }}</p>
             @endif
-            <div class="flex items-center gap-3 pt-2">
-                <div class="w-8 h-8 rounded bg-surface-container border border-outline-variant overflow-hidden">
-                    <img alt="" class="w-full h-full object-cover" src="https://ui-avatars.com/api/?name={{ urlencode($post->user->name) }}&color=58a6ff&background=0d1117&size=32" />
-                </div>
-                <div>
-                    <p class="text-sm font-bold text-on-surface">{{ $post->user->name }}</p>
-                    <p class="text-xs text-on-surface-variant/50">// author</p>
-                </div>
+            <div class="flex items-center justify-between pt-2">
+                <a href="{{ route('users.profile', $post->user->username) }}" class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded bg-surface-container border border-outline-variant overflow-hidden">
+                        <img alt="" class="w-full h-full object-cover" src="{{ $post->user->avatar ?: 'https://ui-avatars.com/api/?name=' . urlencode($post->user->name) . '&color=58a6ff&background=0d1117&size=32' }}" />
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold text-on-surface hover:text-primary transition-colors">{{ $post->user->name }}</p>
+                        <p class="text-xs text-on-surface-variant/50">// author</p>
+                    </div>
+                </a>
                 <x-post-bookmark :post="$post" />
             </div>
         </header>
