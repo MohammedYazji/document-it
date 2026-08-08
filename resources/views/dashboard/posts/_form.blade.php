@@ -6,10 +6,7 @@
     <div class="sticky top-12 z-40 bg-surface/95 backdrop-blur-sm border-b border-outline-variant h-12">
         <div class="flex items-center justify-between h-full px-4 max-w-6xl mx-auto">
             <a href="{{ route('posts.index') }}" class="text-sm text-on-surface-variant hover:text-on-surface transition-colors">$ cancel</a>
-            <div class="flex items-center gap-3">
-                <button type="button" id="preview-toggle" class="text-xs text-on-surface-variant hover:text-primary transition-colors">[preview]</button>
-                <button type="button" id="ai" class="text-xs text-on-surface-variant hover:text-primary transition-colors">[ai]</button>
-            </div>
+            <button type="button" id="preview-toggle" class="text-xs text-on-surface-variant hover:text-primary transition-colors">[preview]</button>
         </div>
     </div>
 
@@ -80,7 +77,11 @@ code block
             </div>
             <div>
                 <label class="text-xs text-on-surface-variant/50 block mb-1">$ cover</label>
-                <input type="file" name="cover_image" accept="image/*" class="w-full text-[10px] text-on-surface-variant file:mr-1 file:py-1 file:px-1.5 file:rounded file:border file:border-outline-variant file:text-[10px] file:bg-surface-container file:text-on-surface" />
+                <input type="file" name="cover_image" accept="image/*" class="w-full text-[10px] text-on-surface-variant file:mr-1 file:py-1 file:px-1.5 file:rounded file:border file:border-outline-variant file:text-[10px] file:bg-surface-container file:text-on-surface mb-1.5" />
+                <label class="flex items-center gap-2 text-xs text-on-surface-variant/50 cursor-pointer">
+                    <input type="checkbox" name="generate_image" value="1" class="rounded border-outline-variant text-primary focus:ring-primary" />
+                    <span>generate with AI if empty</span>
+                </label>
             </div>
             <div>
                 <label class="text-xs text-on-surface-variant/50 block mb-1">$ publish</label>
@@ -89,16 +90,16 @@ code block
                     class="w-full bg-surface-container border border-outline-variant rounded px-2 py-1.5 text-xs focus:ring-1 focus:ring-primary focus:border-primary transition-all text-on-surface" />
             </div>
             <div>
-                <label class="text-xs text-on-surface-variant/50 block mb-1">$ seo title</label>
+                <label class="text-xs text-on-surface-variant/50 block mb-1">$ seo title <span class="text-on-surface-variant/30">(ai if empty)</span></label>
                 <input type="text" name="meta[title]" value="{{ old('meta.title', $post->meta['title'] ?? '') }}"
                     class="w-full bg-surface-container border border-outline-variant rounded px-2 py-1.5 text-xs focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all text-on-surface placeholder:text-on-surface-variant/30"
-                    placeholder="meta title">
+                    placeholder="auto-generated">
             </div>
             <div>
-                <label class="text-xs text-on-surface-variant/50 block mb-1">$ seo desc</label>
+                <label class="text-xs text-on-surface-variant/50 block mb-1">$ seo desc <span class="text-on-surface-variant/30">(ai if empty)</span></label>
                 <input type="text" name="meta[description]" value="{{ old('meta.description', $post->meta['description'] ?? '') }}"
                     class="w-full bg-surface-container border border-outline-variant rounded px-2 py-1.5 text-xs focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all text-on-surface placeholder:text-on-surface-variant/30"
-                    placeholder="meta description">
+                    placeholder="auto-generated">
             </div>
             <input type="hidden" name="status" id="status-field" value="{{ isset($post) && $post->status === 'published' ? 'published' : 'draft' }}">
             <div class="space-y-1.5">
