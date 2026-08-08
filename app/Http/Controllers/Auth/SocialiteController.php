@@ -25,6 +25,7 @@ class SocialiteController extends Controller
                 [
                     'name' => $googleUser->getName(),
                     'username' => $googleUser->getNickname() ?? strtolower(str_replace(' ', '', $googleUser->getName())),
+                    'avatar' => $googleUser->getAvatar(),
                     'type' => 'user',
                 ]
             );
