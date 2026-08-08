@@ -7,11 +7,9 @@ const userId = document.head
 if (userId) {
     window.Echo.private(`App.Models.User.${userId}`).notification(
         (notification) => {
-            const unreadBadge = document.querySelector("[data-unread-badge]");
-            if (unreadBadge) {
-                const count = parseInt(unreadBadge.textContent) + 1;
-                unreadBadge.textContent = count > 9 ? "9+" : count;
-                unreadBadge.classList.remove("hidden");
+            const badge = document.querySelector("[data-unread-badge]");
+            if (badge) {
+                badge.classList.remove("hidden");
             }
         },
     );
