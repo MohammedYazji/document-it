@@ -57,7 +57,7 @@
                         @endif
                     </div>
                     <code class="text-xs text-on-surface-variant bg-surface-container px-2 py-0.5 rounded border border-outline-variant">{{ $category->slug }}</code>
-                    <span class="text-xs text-on-surface-variant/50 shrink-0">{{ $category->posts->count() }}p</span>
+                    <span class="text-xs text-on-surface-variant/50 shrink-0">{{ $category->posts->count() }} posts</span>
                     <div class="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
                         <a href="{{ route('categories.edit', $category->id) }}" class="px-2 py-1 text-xs text-on-surface-variant hover:text-primary rounded transition-colors">edit</a>
                         <button type="button" onclick="openDeleteModal('{{ Str::slug($category->name) }}')" class="px-2 py-1 text-xs text-error hover:text-error rounded transition-colors">del</button>
