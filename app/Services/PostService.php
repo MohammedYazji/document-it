@@ -33,31 +33,28 @@ class PostService
             'meta.title' => 'nullable|string|max:255',
             'meta.description' => 'nullable|string|max:500',
             'meta.keywords' => 'nullable|string|max:255',
-            'generate_image' => 'nullable|boolean',
         ]);
-
-        $generateImage = $validated['generate_image'] ?? false;
-        unset($validated['generate_image']);
 
         $coverImagePath = $this->fileUpload->handle('cover_image', 'covers');
 
         try {
-            return DB::transaction(function () use ($validated, $coverImagePath, $tagsInput, $generateImage) {
+            return DB::transaction(function () use ($validated, $coverImagePath, $tagsInput) {
                 $post = Post::create(array_merge($validated, [
                     'cover_image' => $coverImagePath,
                 ]));
 
                 $this->syncTags->handle($post, $tagsInput);
 
-                $metaProvided = filled($validated['meta']['title'] ?? null)
-                    || filled($validated['meta']['description'] ?? null)
-                    || filled($validated['meta']['keywords'] ?? null);
+                $meta = $validated['meta'] ?? [];
+                $metaProvided = filled($meta['title'] ?? null)
+                    || filled($meta['description'] ?? null)
+                    || filled($meta['keywords'] ?? null);
 
                 if (! $metaProvided) {
                     GeneratePostSeo::dispatch($post);
                 }
 
-                if (! $coverImagePath && $generateImage) {
+                if (! $coverImagePath) {
                     GeneratePostCoverImage::dispatch($post);
                 }
 
