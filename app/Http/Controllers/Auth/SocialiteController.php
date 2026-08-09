@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
 class SocialiteController extends Controller
@@ -20,15 +19,21 @@ class SocialiteController extends Controller
         try {
             $googleUser = Socialite::driver('google')->user();
 
-            $user = User::updateOrCreate(
-                ['email' => $googleUser->getEmail()],
-                [
+            $user = User::where('email', $googleUser->getEmail())->first();
+
+            if ($user) {
+                // Update only avatar on subsequent logins
+                $user->update(['avatar' => $googleUser->getAvatar()]);
+            } else {
+                // Create new user with Google data
+                $user = User::create([
+                    'email' => $googleUser->getEmail(),
                     'name' => $googleUser->getName(),
                     'username' => $googleUser->getNickname() ?? strtolower(str_replace(' ', '', $googleUser->getName())),
                     'avatar' => $googleUser->getAvatar(),
                     'type' => 'user',
-                ]
-            );
+                ]);
+            }
 
             Auth::login($user, true);
 
