@@ -43,7 +43,10 @@
                 <p class="text-sm text-on-surface-variant line-clamp-2">{{ $featuredPost->excerpt ?? Str::limit(strip_tags($featuredPost->content), 120) }}</p>
                 <div class="flex items-center justify-between pt-2 border-t border-outline-variant">
                   <span class="text-xs text-on-surface-variant">{{ $featuredPost->user->name }}</span>
-                  <x-post-bookmark :post="$featuredPost" />
+                  <div class="flex items-center gap-3">
+                    <x-post-like :post="$featuredPost" />
+                    <x-post-bookmark :post="$featuredPost" />
+                  </div>
                 </div>
               </div>
             </article>

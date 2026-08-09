@@ -32,7 +32,11 @@
                         <p class="text-xs text-on-surface-variant/50">// author</p>
                     </div>
                 </a>
-                <x-post-bookmark :post="$post" />
+                <div class="flex items-center gap-3">
+                    <x-post-like :post="$post" />
+                    <span class="text-on-surface-variant/20">|</span>
+                    <x-post-bookmark :post="$post" />
+                </div>
             </div>
         </header>
 
