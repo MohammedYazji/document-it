@@ -35,6 +35,13 @@
 
     <!-- Center: Feed -->
     <section class="md:col-span-7 space-y-6">
+      {{-- Search --}}
+      <form action="{{ route('search') }}" method="GET" class="flex items-center bg-surface border border-outline-variant rounded px-3 py-2 gap-2 font-mono text-xs">
+        <span class="text-primary">~/</span>
+        <input name="q" class="bg-transparent border-none focus:ring-0 text-on-surface flex-1 placeholder:text-on-surface-variant/30 outline-none" placeholder="search..." type="text" />
+        <button type="submit" class="text-primary hover:text-primary/80 transition-colors">></button>
+      </form>
+
       {{-- Sort bar --}}
       <div class="flex items-center gap-2 text-xs">
         <span class="text-on-surface-variant/50">$ sort:</span>
