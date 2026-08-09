@@ -24,7 +24,7 @@
         <div class="flex-1 min-w-0 space-y-4">
             <textarea name="title"
                 class="w-full bg-transparent border-none focus:ring-0 text-2xl md:text-3xl font-bold resize-none placeholder:text-on-surface-variant/20 text-on-surface overflow-hidden"
-                oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"' placeholder="untitled"
+                oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"' placeholder="write your title..."
                 rows="1">{{ old('title', $post->title ?? '') }}</textarea>
             @error('title') <p class="text-xs text-error">{{ $message }}</p> @enderror
 
@@ -75,13 +75,15 @@ code block
                     class="w-full bg-surface-container border border-outline-variant rounded px-2 py-1.5 text-xs focus:ring-1 focus:ring-primary focus:border-primary transition-all text-on-surface placeholder:text-on-surface-variant/30"
                     placeholder="tag1, tag2" type="text" />
             </div>
-            <div>
+            <div class="border-t border-outline-variant pt-4">
                 <label class="text-xs text-on-surface-variant/50 block mb-1">$ cover</label>
-                <input type="file" name="cover_image" accept="image/*" class="w-full text-[10px] text-on-surface-variant file:mr-1 file:py-1 file:px-1.5 file:rounded file:border file:border-outline-variant file:text-[10px] file:bg-surface-container file:text-on-surface mb-1.5" />
-                <label class="flex items-center gap-2 text-xs text-on-surface-variant/50 cursor-pointer">
-                    <input type="checkbox" name="generate_image" value="1" class="rounded border-outline-variant text-primary focus:ring-primary" />
-                    <span>generate with AI if empty</span>
-                </label>
+                <div id="cover-preview-wrapper" class="relative {{ isset($post) && $post->cover_image ? '' : 'hidden' }} mb-2">
+                    <img id="cover-preview-img" class="w-full h-32 object-cover rounded-lg border border-outline-variant" src="{{ isset($post) && $post->cover_image ? asset('storage/' . $post->cover_image) : '' }}" alt="" />
+                    <button type="button" onclick="document.getElementById('cover-preview-wrapper').classList.add('hidden'); document.getElementById('cover_image_input').value = '';" class="absolute top-1 right-1 bg-error/80 text-white text-xs px-1.5 py-0.5 rounded">x</button>
+                </div>
+                <input id="cover_image_input" type="file" name="cover_image" accept="image/*"
+                    class="w-full text-[10px] text-on-surface-variant file:mr-1 file:py-1 file:px-1.5 file:rounded file:border file:border-outline-variant file:text-[10px] file:bg-surface-container file:text-on-surface"
+                    onchange="const f=this.files[0]; if(f){ const r=new FileReader(); r.onload=e=>{ document.getElementById('cover-preview-img').src=e.target.result; document.getElementById('cover-preview-wrapper').classList.remove('hidden'); }; r.readAsDataURL(f); }" />
             </div>
             <div>
                 <label class="text-xs text-on-surface-variant/50 block mb-1">$ publish</label>
@@ -89,7 +91,7 @@ code block
                     value="{{ old('published_at', isset($post) && $post->published_at ? (is_string($post->published_at) ? \Carbon\Carbon::parse($post->published_at)->format('Y-m-d\TH:i') : $post->published_at->format('Y-m-d\TH:i')) : '') }}"
                     class="w-full bg-surface-container border border-outline-variant rounded px-2 py-1.5 text-xs focus:ring-1 focus:ring-primary focus:border-primary transition-all text-on-surface" />
             </div>
-            <div>
+            <div class="border-t border-outline-variant pt-4">
                 <label class="text-xs text-on-surface-variant/50 block mb-1">$ seo title <span class="text-on-surface-variant/30">(ai if empty)</span></label>
                 <input type="text" name="meta[title]" value="{{ old('meta.title', $post->meta['title'] ?? '') }}"
                     class="w-full bg-surface-container border border-outline-variant rounded px-2 py-1.5 text-xs focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all text-on-surface placeholder:text-on-surface-variant/30"
@@ -102,7 +104,10 @@ code block
                     placeholder="auto-generated">
             </div>
             <input type="hidden" name="status" id="status-field" value="{{ isset($post) && $post->status === 'published' ? 'published' : 'draft' }}">
-            <div class="space-y-1.5">
+            <div class="border-t border-outline-variant pt-4 space-y-1.5">
+                <button type="button" id="ai" class="w-full bg-surface-container border border-outline-variant text-primary px-4 py-2 rounded text-sm hover:bg-surface-container-high transition-colors">
+                    $ write with ai
+                </button>
                 <button type="submit" class="w-full bg-primary text-on-primary px-4 py-2 rounded text-sm hover:opacity-90 transition-opacity" onclick="document.getElementById('status-field').value='published'">
                     $ publish
                 </button>
@@ -117,6 +122,7 @@ code block
 <script>
     const btn = document.getElementById('ai');
     const content = document.getElementById('content');
+    const title = document.querySelector('textarea[name="title"]');
     const preview = document.getElementById('preview');
     const previewToggle = document.getElementById('preview-toggle');
     let isPreview = false;
@@ -152,14 +158,30 @@ code block
 
     btn?.addEventListener('click', function(e) {
         e.preventDefault();
-        let message = window.prompt('Post idea:');
-        if (message) {
-            const evtSource = new EventSource("{{ route('posts.ai') }}?message=" + encodeURIComponent(message));
-            evtSource.onmessage = function(event) {
-                if (event.data === '[DONE]') { evtSource.close(); return; }
-                try { let d = JSON.parse(event.data); if (d?.delta) content.value += d.delta; } catch(e) {}
-            };
-            evtSource.onerror = function() { evtSource.close(); };
+        const topic = title?.value?.trim();
+        if (!topic) {
+            title?.focus();
+            return;
         }
+        btn.disabled = true;
+        btn.textContent = '$ generating...';
+        const evtSource = new EventSource("{{ route('posts.ai') }}?message=" + encodeURIComponent(topic));
+        evtSource.onmessage = function(event) {
+            if (event.data === '[DONE]') {
+                evtSource.close();
+                btn.disabled = false;
+                btn.textContent = '$ write with ai';
+                return;
+            }
+            try {
+                let d = JSON.parse(event.data);
+                if (d?.delta) content.value += d.delta;
+            } catch(e) {}
+        };
+        evtSource.onerror = function() {
+            evtSource.close();
+            btn.disabled = false;
+            btn.textContent = '$ write with ai';
+        };
     });
 </script>
