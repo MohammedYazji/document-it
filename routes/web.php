@@ -9,6 +9,7 @@ use App\Http\Controllers\Dashboard\UserController;
 use App\Http\Controllers\Auth\SocialiteController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LikeController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -34,6 +35,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('bookmarks', [BookmarkController::class, 'store'])->name('bookmarks.store');
     Route::delete('bookmarks', [BookmarkController::class, 'destroy'])->name('bookmarks.destroy');
 
+    // Likes
+    Route::post('likes', [LikeController::class, 'store'])->name('likes.store');
+    Route::delete('likes', [LikeController::class, 'destroy'])->name('likes.destroy');
+
+    // Settings
+    Route::get('settings', [ProfileController::class, 'edit'])->name('settings');
+    Route::put('settings', [ProfileController::class, 'update'])->name('settings.update');
+
     // Dashboard
     Route::prefix('dashboard')->group(function () {
 
@@ -58,8 +67,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'index', 'create', 'store', 'show', 'edit', 'update', 'destroy',
         ]);
 
-        // Categories (all authenticated users)
-        Route::resource('categories', CategoryController::class)->names([
+        // Categories (admin only)
+        Route::middleware('user.type:admin,super-admin')->resource('categories', CategoryController::class)->names([
             'index', 'create', 'store', 'edit', 'update', 'destroy',
         ]);
     });

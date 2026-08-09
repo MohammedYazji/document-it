@@ -141,6 +141,11 @@ class Post extends Model
         return $this->belongsToMany(User::class, 'bookmarks')->withTimestamps();
     }
 
+    public function likedBy(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'likes')->withTimestamps();
+    }
+
     public function content(): Attribute
     {
         return new Attribute(
