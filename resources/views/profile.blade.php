@@ -8,7 +8,7 @@
             <div class="flex-1 space-y-3">
                 <div>
                     <h1 class="text-xl font-bold text-on-surface">{{ $user->name }}</h1>
-                    <p class="text-sm text-on-surface-variant">{{ $user->username }}</p>
+                    <p class="text-sm text-on-surface-variant">{{ '@' . $user->username }}</p>
                 </div>
                 <div class="flex items-center gap-4 text-sm text-on-surface-variant">
                     <span><span class="font-bold text-on-surface">{{ $user->posts_count }}</span> posts</span>
