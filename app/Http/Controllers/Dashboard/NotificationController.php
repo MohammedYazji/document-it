@@ -14,6 +14,9 @@ class NotificationController extends Controller
             ->latest()
             ->paginate(15);
 
+        // Mark all as read when viewing
+        $request->user()->unreadNotifications->markAsRead();
+
         return view('dashboard.notifications', [
             'notifications' => $notifications,
         ]);
