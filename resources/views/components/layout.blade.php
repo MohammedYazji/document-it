@@ -28,10 +28,18 @@
                     href="{{ route('posts.index') }}">
                     $ dashboard
                 </a>
-                <a class="flex items-center gap-2 px-3 py-2 rounded text-sm {{ request()->routeIs('categories.*') ? 'bg-primary/10 text-primary' : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface' }} transition-colors"
-                    href="{{ route('categories.index') }}">
-                    $ categories
-                </a>
+                @if(in_array(auth()->user()->type ?? '', ['admin', 'super-admin']))
+                    <a class="flex items-center gap-2 px-3 py-2 rounded text-sm {{ request()->routeIs('categories.*') ? 'bg-primary/10 text-primary' : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface' }} transition-colors"
+                        href="{{ route('categories.index') }}">
+                        $ categories
+                    </a>
+                @endif
+                @if(auth()->check() && auth()->user()->type === 'super-admin')
+                    <a class="flex items-center gap-2 px-3 py-2 rounded text-sm {{ request()->routeIs('admin.users.*') ? 'bg-primary/10 text-primary' : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface' }} transition-colors"
+                        href="{{ route('admin.users.index') }}">
+                        $ users
+                    </a>
+                @endif
                 @auth
                     <a class="flex items-center gap-2 px-3 py-2 rounded text-sm {{ request()->routeIs('bookmarks.*') ? 'bg-primary/10 text-primary' : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface' }} transition-colors"
                         href="{{ route('bookmarks.index') }}">
@@ -57,11 +65,18 @@
                         <button id="mobile-menu-btn" class="md:hidden text-on-surface-variant hover:text-primary text-sm">[=]</button>
                         <a href="{{ route('home') }}" class="md:hidden font-bold text-primary text-sm">&gt;&gt;</a>
                     </div>
+                    {{-- Terminal path --}}
+                    <div class="text-xs text-on-surface-variant/50 font-mono hidden sm:block">
+                        <span class="text-primary">~</span>{{ request()->path() !== '/' ? '/' . request()->path() : '' }}
+                    </div>
                     <div class="flex items-center gap-3 text-sm">
-                        @php $unreadCount = Auth::check() ? Auth::user()->unreadNotifications()->count() : 0 @endphp
+                        @php
+                            $unreadCount = Auth::check() ? Auth::user()->unreadNotifications()->count() : 0;
+                            $onNotifications = request()->routeIs('notifications.*');
+                        @endphp
                         <a href="{{ route('notifications.index') }}" class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1.5">
                             [inbox]
-                            <span data-unread-badge class="relative flex h-2 w-2 {{ $unreadCount > 0 ? '' : 'hidden' }}">
+                            <span data-unread-badge class="relative flex h-2 w-2 {{ ($unreadCount > 0 && !$onNotifications) ? '' : 'hidden' }}">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                                 <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                             </span>
