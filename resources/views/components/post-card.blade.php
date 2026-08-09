@@ -1,9 +1,9 @@
 @props(['post'])
 
 <a href="{{ route('post.show', $post->slug) }}" class="block group">
-  <article class="p-4 border border-outline-variant rounded-lg bg-surface hover:border-primary transition-all hover:shadow-[0_0_15px_rgba(88,166,255,0.1)]">
-    {{-- Header: category + date --}}
-    <div class="flex items-center gap-2 text-xs text-on-surface-variant mb-2">
+  <article class="p-4 border border-outline-variant rounded-lg bg-surface hover:border-primary transition-all">
+    {{-- Top meta row --}}
+    <div class="flex items-center gap-2 text-xs text-on-surface-variant/60 mb-2">
       <span class="text-primary font-bold">$</span>
       <span class="text-primary">{{ $post->category->name }}</span>
       <span class="text-on-surface-variant/30">|</span>
@@ -26,7 +26,7 @@
 
     {{-- Footer --}}
     <div class="flex items-center justify-between text-xs relative">
-      <a href="{{ route('users.profile', $post->user->username) }}" class="flex  absolute items-center gap-2 text-on-surface-variant/60 hover:text-primary transition-colors" onclick="event.stopPropagation()">
+      <a href="{{ route('users.profile', $post->user->username) }}" class="flex absolute items-center gap-2 text-on-surface-variant/60 hover:text-primary transition-colors" onclick="event.stopPropagation()">
         <span class="text-primary/60">></span>
         <span>{{ $post->user->name }}</span>
       </a>
