@@ -8,21 +8,49 @@
 
     <!-- Left: Tags -->
     <aside class="hidden md:block md:col-span-2">
-      <div class="sticky top-16">
-        <p class="text-xs text-on-surface-variant/50 uppercase tracking-widest mb-2">tags</p>
-        <div class="flex flex-wrap gap-1.5">
-          @foreach(\App\Models\Tag::all() as $tag)
-            <a class="px-2 py-1 text-xs bg-surface border border-outline-variant rounded text-on-surface-variant hover:border-primary hover:text-primary transition-colors {{ isset($tag) && $tag->id === $tag->id ? 'border-primary text-primary' : '' }}" href="{{ route('tag.show', $tag->slug) }}">#{{ $tag->name }}</a>
-          @endforeach
+      <div class="sticky top-16 space-y-6">
+        <div>
+          <p class="text-xs text-on-surface-variant/50 uppercase tracking-widest mb-2">tags</p>
+          <div class="flex flex-wrap gap-1.5">
+            @foreach(\App\Models\Tag::all() as $tag)
+              <a class="px-2 py-1 text-xs bg-surface border border-outline-variant rounded text-on-surface-variant hover:border-primary hover:text-primary transition-colors" href="{{ route('tag.show', $tag->slug) }}">#{{ $tag->name }}</a>
+            @endforeach
+          </div>
         </div>
+
+        {{-- Categories --}}
+        @if($categories->isNotEmpty())
+        <div>
+          <p class="text-xs text-on-surface-variant/50 uppercase tracking-widest mb-2">categories</p>
+          <div class="flex flex-wrap gap-1.5">
+            <a class="px-2 py-1 text-xs bg-surface border rounded transition-colors {{ !$category ? 'border-primary text-primary' : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary' }}" href="{{ route('home', ['sort' => $sort]) }}">all</a>
+            @foreach($categories as $cat)
+              <a class="px-2 py-1 text-xs bg-surface border rounded transition-colors {{ $category === $cat->slug ? 'border-primary text-primary' : 'border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary' }}" href="{{ route('home', ['sort' => $sort, 'category' => $cat->slug]) }}">{{ $cat->name }}</a>
+            @endforeach
+          </div>
+        </div>
+        @endif
       </div>
     </aside>
 
     <!-- Center: Feed -->
     <section class="md:col-span-7 space-y-6">
+      {{-- Sort bar --}}
+      <div class="flex items-center gap-2 text-xs">
+        <span class="text-on-surface-variant/50">$ sort:</span>
+        <a class="px-2 py-1 rounded transition-colors {{ $sort === 'recent' ? 'bg-primary text-on-primary' : 'bg-surface border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary' }}" href="{{ route('home', array_merge(['sort' => 'recent', 'category' => $category, 'readtime' => $readtime])) }}">recent</a>
+        <a class="px-2 py-1 rounded transition-colors {{ $sort === 'popular' ? 'bg-primary text-on-primary' : 'bg-surface border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary' }}" href="{{ route('home', array_merge(['sort' => 'popular', 'category' => $category, 'readtime' => $readtime])) }}">popular</a>
+        <a class="px-2 py-1 rounded transition-colors {{ $sort === 'trending' ? 'bg-primary text-on-primary' : 'bg-surface border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary' }}" href="{{ route('home', array_merge(['sort' => 'trending', 'category' => $category, 'readtime' => $readtime])) }}">trending</a>
+        <span class="text-on-surface-variant/20">|</span>
+        <span class="text-on-surface-variant/50">$ read:</span>
+        <a class="px-2 py-1 rounded transition-colors {{ !$readtime ? 'bg-primary text-on-primary' : 'bg-surface border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary' }}" href="{{ route('home', ['sort' => $sort, 'category' => $category]) }}">all</a>
+        <a class="px-2 py-1 rounded transition-colors {{ $readtime === 'short' ? 'bg-primary text-on-primary' : 'bg-surface border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary' }}" href="{{ route('home', ['sort' => $sort, 'category' => $category, 'readtime' => 'short']) }}">short</a>
+        <a class="px-2 py-1 rounded transition-colors {{ $readtime === 'long' ? 'bg-primary text-on-primary' : 'bg-surface border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary' }}" href="{{ route('home', ['sort' => $sort, 'category' => $category, 'readtime' => 'long']) }}">long</a>
+      </div>
+
       @if($posts->isNotEmpty())
         @php
-          $showFeatured = $posts->onFirstPage();
+          $showFeatured = $posts->onFirstPage() && $sort === 'recent' && !$category;
           $displayPosts = $showFeatured ? $posts->skip(1) : $posts;
         @endphp
 

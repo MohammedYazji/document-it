@@ -3,13 +3,18 @@
 <a href="{{ route('post.show', $post->slug) }}" class="block group">
   <article class="p-4 border border-outline-variant rounded-lg bg-surface hover:border-primary transition-all">
     {{-- Top meta row --}}
-    <div class="flex items-center gap-2 text-xs text-on-surface-variant/60 mb-2">
-      <span class="text-primary font-bold">$</span>
-      <span class="text-primary">{{ $post->category->name }}</span>
-      <span class="text-on-surface-variant/30">|</span>
-      <span>{{ $post->publish_time->format('M d, Y') }}</span>
-      <span class="text-on-surface-variant/30">|</span>
-      <span>{{ $post->views }} views</span>
+    <div class="flex items-center justify-between text-xs text-on-surface-variant/60 mb-2">
+      <div class="flex items-center gap-2">
+        <span class="text-primary font-bold">$</span>
+        <span class="text-primary">{{ $post->category->name }}</span>
+        <span class="text-on-surface-variant/30">|</span>
+        <span>{{ $post->publish_time->format('M d, Y') }}</span>
+        <span class="text-on-surface-variant/30">|</span>
+        <span>{{ $post->views }} views</span>
+      </div>
+      @if($post->created_at->diffInHours(now()) < 24)
+        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-green-500/10 text-green-400 border border-green-500/30">NEW</span>
+      @endif
     </div>
 
     {{-- Title --}}
