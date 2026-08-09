@@ -11,10 +11,12 @@ use App\Http\Controllers\FollowController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SearchController;
 use Illuminate\Support\Facades\Route;
 
 // Public Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/search', [SearchController::class, 'index'])->name('search');
 Route::get('/posts/{slug}', [HomeController::class, 'show'])->name('post.show');
 Route::get('/tags/{tag}', [HomeController::class, 'tag'])->name('tag.show');
 Route::get('/u/{username}', [ProfileController::class, 'show'])->name('users.profile');
