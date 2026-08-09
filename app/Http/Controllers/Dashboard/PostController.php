@@ -183,8 +183,6 @@ class PostController extends Controller
         $this->authorizePost($post);
         $post->delete();
 
-        
-
         return redirect()->route('posts.index')->with('success', 'Post sent to trash.');
     }
 
@@ -195,10 +193,19 @@ class PostController extends Controller
     {
         $post = Post::onlyTrashed()->findOrFail($id);
         $this->authorizePost($post);
+        $tagIds = $post->tags()->withoutTrashed()->pluck('post_tag.tag_id');
         $post->forceDelete();
-
-        
+        $this->cleanOrphanTags($tagIds);
 
         return redirect()->route('posts.index')->with('success', 'Post permanently deleted.');
+    }
+
+    protected function cleanOrphanTags($tagIds): void
+    {
+        if ($tagIds->isEmpty()) {
+            return;
+        }
+
+        \App\Models\Tag::whereIn('id', $tagIds)->whereDoesntHave('posts')->delete();
     }
 }

@@ -11,8 +11,9 @@ class SyncTags
     public function handle(Post $post, ?string $tags): void
     {
         if ($tags === null || trim($tags) === '') {
+            $oldTagIds = $post->tags->pluck('id');
             $post->tags()->detach();
-
+            $this->cleanOrphanTags($oldTagIds);
             return;
         }
 
@@ -27,6 +28,16 @@ class SyncTags
                 ])->id;
             });
 
+        $oldTagIds = $post->tags->pluck('id');
         $post->tags()->sync($tagIds);
+        $this->cleanOrphanTags($oldTagIds->merge($tagIds)->unique());
+    }
+
+    protected function cleanOrphanTags($tagIds): void
+    {
+        if ($tagIds->isEmpty()) {
+            return;
+        }
+        Tag::whereIn('id', $tagIds)->whereDoesntHave('posts')->delete();
     }
 }
