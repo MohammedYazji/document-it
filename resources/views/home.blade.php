@@ -38,12 +38,12 @@
       {{-- Search --}}
       <form action="{{ route('search') }}" method="GET" class="flex items-center bg-surface border border-outline-variant rounded px-3 py-2 gap-2 font-mono text-xs">
         <span class="text-primary">~/</span>
-        <input name="q" class="bg-transparent border-none focus:ring-0 text-on-surface flex-1 placeholder:text-on-surface-variant/30 outline-none" placeholder="search..." type="text" />
+        <input name="q" class="bg-transparent border-none focus:ring-0 text-on-surface flex-1 placeholder:text-on-surface-variant/30 outline-none" placeholder="search or smart search..." type="text" />
         <button type="submit" class="text-primary hover:text-primary/80 transition-colors">></button>
       </form>
 
       {{-- Sort bar --}}
-      <div class="flex items-center gap-2 text-xs">
+      <div class="flex items-center gap-2 text-xs justify-center">
         <span class="text-on-surface-variant/50">$ sort:</span>
         <a class="px-2 py-1 rounded transition-colors {{ $sort === 'recent' ? 'bg-primary text-on-primary' : 'bg-surface border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary' }}" href="{{ route('home', array_merge(['sort' => 'recent', 'category' => $category, 'readtime' => $readtime])) }}">recent</a>
         <a class="px-2 py-1 rounded transition-colors {{ $sort === 'popular' ? 'bg-primary text-on-primary' : 'bg-surface border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary' }}" href="{{ route('home', array_merge(['sort' => 'popular', 'category' => $category, 'readtime' => $readtime])) }}">popular</a>
