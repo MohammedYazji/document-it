@@ -20,7 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'user.type' => EnsureUserType::class,
         ])->web([
             UpdateUserLastActivityTime::class,
-        ]);
+        ])->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
