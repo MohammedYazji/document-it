@@ -7,19 +7,19 @@
             @if($query)
                 <p class="text-sm text-on-surface-variant mt-1">
                     results for "<span class="text-primary">{{ $query }}</span>"
+                    @if($smart)
+                        <span class="text-primary/60">[AI expanded]</span>
+                    @endif
                 </p>
             @endif
+            <p class="text-[10px] text-on-surface-variant/40 mt-1">type <span class="text-primary">smart/</span> before query for AI search (titles only)</p>
         </div>
 
         {{-- Search form --}}
-        <form action="{{ route('search') }}" method="GET" class="flex gap-2">
-            <div class="flex-1 flex items-center bg-surface border border-outline-variant rounded px-3 py-2 gap-2">
-                <span class="text-on-surface-variant/40 text-sm">></span>
-                <input name="q" value="{{ $query }}" class="bg-transparent border-none focus:ring-0 text-on-surface text-sm flex-1 placeholder:text-on-surface-variant/30 outline-none" placeholder="search posts..." type="text" autofocus />
-            </div>
-            <button type="submit" class="bg-primary text-on-primary px-4 py-2 rounded text-sm hover:opacity-90 transition-opacity">
-                $ search
-            </button>
+        <form action="{{ route('search') }}" method="GET" class="flex items-center bg-surface border border-outline-variant rounded px-3 py-2 gap-2 font-mono text-xs">
+            <span class="text-primary">~/</span>
+            <input name="q" value="{{ $input ?? $query }}" class="bg-transparent border-none focus:ring-0 text-on-surface flex-1 placeholder:text-on-surface-variant/30 outline-none" placeholder="search or smart search..." type="text" autofocus />
+            <button type="submit" class="text-primary hover:text-primary/80 transition-colors">></button>
         </form>
 
         {{-- Results --}}
