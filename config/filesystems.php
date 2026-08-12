@@ -41,7 +41,16 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
+            'url' => rtrim(env('APP_URL', 'http://document-it.test'), '/').'/storage',
+            'visibility' => 'public',
+            'throw' => false,
+            'report' => false,
+        ],
+
+        'uploads' => [
+            'driver' => 'local',
+            'root' => public_path('uploads'), // will be nested in public folder
+            'url' => rtrim(env('APP_URL', 'http://document-it.test'), '/').'/uploads',
             'visibility' => 'public',
             'throw' => false,
             'report' => false,

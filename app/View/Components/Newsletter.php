@@ -21,6 +21,6 @@ class Newsletter extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.newsletter');
+        return view('components.widgets.newsletter');
     }
 }

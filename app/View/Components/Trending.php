@@ -21,6 +21,6 @@ class Trending extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.trending');
+        return view('components.widgets.trending');
     }
 }
