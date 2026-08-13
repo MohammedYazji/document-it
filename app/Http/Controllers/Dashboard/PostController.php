@@ -193,7 +193,7 @@ class PostController extends Controller
     {
         $post = Post::onlyTrashed()->findOrFail($id);
         $this->authorizePost($post);
-        $tagIds = $post->tags()->withoutTrashed()->pluck('post_tag.tag_id');
+        $tagIds = $post->tags()->pluck('post_tag.tag_id');
         $post->forceDelete();
         $this->cleanOrphanTags($tagIds);
 
