@@ -48,7 +48,14 @@ class HomeController extends Controller
             ->latest()
             ->paginate(10);
 
-        return view('home', compact('posts', 'tag'));
+        return view('home', [
+            'posts' => $posts,
+            'tag' => $tag,
+            'categories' => \App\Models\Category::orderBy('name')->get(),
+            'category' => null,
+            'sort' => 'recent',
+            'readtime' => null,
+        ]);
     }
 
     public function show($slug)
